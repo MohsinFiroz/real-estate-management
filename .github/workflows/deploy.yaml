@@ -31,7 +31,7 @@ jobs:
     - name: Authenticate to OVH Kubernetes cluster
       run: |
         mkdir -p $HOME/.kube  # Create .kube directory if it doesn't exist
-        echo "${{ secrets.OVH_KUBECONFIG }}" > $HOME/.kube/config  # Write kubeconfig
+        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config  # Write kubeconfig
 
     # Set up GitHub authentication using GitHub's token to access the registry
     - name: Log in to GitHub Container Registry
