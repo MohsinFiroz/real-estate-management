@@ -13,9 +13,11 @@ spec:
       labels:
         app: real-estate-management
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret  # Use the secret for image pull authentication
       containers:
         - name: real-estate-management
-          image: ghcr.io/your-username/real-estate-management:latest
+          image: ghcr.io/MohsinFiroz/real-estate-management:latest
           ports:
             - containerPort: 8080
           env:
@@ -49,39 +51,3 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: DB_SSL_MODE
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: real-estate-management-service
-  namespace: real-estate-prod
-spec:
-  selector:
-    app: real-estate-management
-  ports:
-    - port: 8080
-      targetPort: 8080
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: real-estate-management-ingress
-  namespace: real-estate-prod
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-    - host: go-app.yourdomain.com  # Replace with your domain
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: real-estate-management-service
-                port:
-                  number: 8080

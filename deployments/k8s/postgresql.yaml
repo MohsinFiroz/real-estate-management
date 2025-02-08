@@ -1,87 +1,94 @@
-name: Deploy to Kubernetes
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: real-estate-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 
-on:
-  push:
-    branches:
-      - main  # Or any other branch you want to deploy on
+---
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: real-estate-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:13-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DB_NAME
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+---
 
-    # Set up Go environment
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: '1.23.6'
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-service
+  namespace: real-estate-prod
+spec:
+  selector:
+    app: postgresql
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None  # Headless service for internal communication within the cluster
 
-    # Set up kubectl to interact with your Kubernetes cluster
-    - name: Set up kubectl
-      run: |
-        # Install kubectl
-        curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.24.0/bin/linux/amd64/kubectl
-        chmod +x kubectl
-        sudo mv kubectl /usr/local/bin/
+---
 
-    # Create .kube directory and authenticate to OVH Kubernetes cluster
-    - name: Authenticate to OVH Kubernetes cluster
-      run: |
-        mkdir -p $HOME/.kube  # Create .kube directory if it doesn't exist
-        echo "${{ secrets.OVH_KUBECONFIG }}" > $HOME/.kube/config  # Write kubeconfig
-
-    # Set up GitHub authentication using GitHub's token to access the registry
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token to access the container registry
-
-    # Apply Kubernetes Secret for GHCR (create or update)
-    - name: Apply Kubernetes Secret for GHCR
-      run: |
-        kubectl apply -f - <<EOF
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: ghcr-secret
-          namespace: real-estate-prod
-        type: Opaque
-        data:
-          .dockerconfigjson: $(echo -n '{"auths":{"ghcr.io":{"username":"'"${{ github.actor }}"'","password":"'"${{ secrets.GITHUB_TOKEN }}"'"}}}' | base64)
-        EOF
-
-    # Apply Kubernetes Secret for PostgreSQL credentials (create or update)
-    - name: Apply Kubernetes Secret for PostgreSQL
-      run: |
-        kubectl apply -f - <<EOF
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: db-secret
-          namespace: real-estate-prod
-        type: Opaque
-        data:
-          DB_HOST: $(echo -n "postgresql-service.real-estate-prod.svc.cluster.local" | base64)
-          DB_PORT: $(echo -n "5432" | base64)
-          DB_USER: $(echo -n "${{ secrets.DB_USER }}" | base64)
-          DB_PASSWORD: $(echo -n "${{ secrets.DB_PASSWORD }}" | base64)
-          DB_NAME: $(echo -n "${{ secrets.DB_NAME }}" | base64)
-          DB_SSL_MODE: $(echo -n "${{ secrets.DB_SSL_MODE }}" | base64)
-        EOF
-
-    # Deploy PostgreSQL to Kubernetes
-    - name: Deploy PostgreSQL to Kubernetes
-      run: |
-        kubectl apply -f k8s/postgresql.yaml
-        kubectl rollout status deployment/postgresql -n real-estate-prod
-
-    # Deploy Go Application to Kubernetes
-    - name: Deploy Go Application to Kubernetes
-      run: |
-        kubectl apply -f k8s/app.yaml
-        kubectl rollout status deployment/real-estate-management -n real-estate-prod
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: postgresql-ingress
+  namespace: real-estate-prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: postgres.yourdomain.com  # Replace with your domain or service name
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: postgresql-service
+                port:
+                  number: 5432
