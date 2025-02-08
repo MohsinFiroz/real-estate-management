@@ -77,5 +77,5 @@ jobs:
     # Deploy Go Application to Kubernetes
     - name: Deploy Go Application to Kubernetes
       run: |
-        kubectl apply -f k8s/go-app.yaml
+        kubectl apply -f k8s/app.yaml
         kubectl rollout status deployment/real-estate-management -n real-estate-prod
