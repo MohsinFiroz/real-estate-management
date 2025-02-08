@@ -1,11 +1,10 @@
 # Real Estate Management
 
-![Go Version](https://img.shields.io/badge/Go-1.23.6-blue)
-![GORM](https://img.shields.io/badge/GORM-v1.25.12-green)
-![Fiber](https://img.shields.io/badge/Fiber-v2.52.6-blue)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v1.5.11-red)
+![Go Version](https://img.shields.io/badge/Go-1.23.6-00ADD8?style=flat&logo=go)
+![Fiber](https://img.shields.io/badge/Fiber-v2.52.6-00BFB3?style=flat&logo=fiber)
+![GORM](https://img.shields.io/badge/GORM-v1.25.12-5C6BC0?style=flat&logo=gorm)
+![PostgreSQL Driver](https://img.shields.io/badge/PostgreSQL-v1.5.11-336791?style=flat&logo=postgresql)
 
-## Overview
 ## Overview
 This project is focused on real estate management, providing functionality for handling property data, user management, and other core features commonly required in real estate applications. It utilizes a fast and minimalistic web framework with an efficient ORM for database interactions, making it easy to manage and interact with PostgreSQL databases.
 
