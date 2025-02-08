@@ -1,0 +1,73 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main  # Or any other branch you want to deploy on
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Set up Go environment
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.23.6'
+
+    # Set up kubectl to interact with your Kubernetes cluster
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v2
+      with:
+        version: 'v1.24.0'  # Choose the kubectl version you need
+
+    # Set up GitHub authentication using GitHub's token to access the registry
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token to access the container registry
+
+    # Create Kubernetes namespace if it doesn't exist
+    - name: Create Kubernetes namespace if not exists
+      run: |
+        kubectl get namespace real-estate-prod || kubectl create namespace real-estate-prod
+
+    # Create Kubernetes secret to allow pulling images from GitHub Container Registry
+    - name: Create Kubernetes Secret for GHCR
+      run: |
+        kubectl create secret docker-registry ghcr-secret \
+          --docker-server=ghcr.io \
+          --docker-username=${{ github.actor }} \
+          --docker-password=${{ secrets.GITHUB_TOKEN }} \
+          --docker-email=${{ github.actor }}@users.noreply.github.com \
+          --namespace=real-estate-prod
+          
+    # Create Kubernetes secret for PostgreSQL credentials
+    - name: Create Kubernetes Secret for PostgreSQL
+      run: |
+        kubectl create secret generic db-secret \
+          --from-literal=DB_HOST=postgresql-service.real-estate-prod.svc.cluster.local \
+          --from-literal=DB_PORT=5432 \
+          --from-literal=DB_USER=${{ secrets.DB_USER }} \
+          --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+          --from-literal=DB_NAME=${{ secrets.DB_NAME }} \
+          --from-literal=DB_SSL_MODE=${{ secrets.DB_SSL_MODE }} \
+          --namespace=real-estate-prod
+
+    # Deploy PostgreSQL to Kubernetes
+    - name: Deploy PostgreSQL to Kubernetes
+      run: |
+        kubectl apply -f k8s/postgresql.yaml
+        kubectl rollout status deployment/postgresql -n real-estate-prod
+
+    # Deploy Go Application to Kubernetes
+    - name: Deploy Go Application to Kubernetes
+      run: |
+        kubectl apply -f k8s/go-app.yaml
+        kubectl rollout status deployment/real-estate-management -n real-estate-prod
