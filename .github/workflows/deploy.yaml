@@ -27,11 +27,11 @@ jobs:
         chmod +x kubectl
         sudo mv kubectl /usr/local/bin/
 
-    # Authenticate to OVH Kubernetes cluster
+    # Create .kube directory and authenticate to OVH Kubernetes cluster
     - name: Authenticate to OVH Kubernetes cluster
       run: |
-        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-        # Alternatively, if you're using a token, you can authenticate using kubectl config
+        mkdir -p $HOME/.kube  # Create .kube directory if it doesn't exist
+        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config  # Write kubeconfig
 
     # Set up GitHub authentication using GitHub's token to access the registry
     - name: Log in to GitHub Container Registry
