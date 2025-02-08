@@ -21,9 +21,17 @@ jobs:
 
     # Set up kubectl to interact with your Kubernetes cluster
     - name: Set up kubectl
-      uses: azure/setup-kubectl@v2
-      with:
-        version: 'v1.24.0'  # Choose the kubectl version you need
+      run: |
+        # Install kubectl
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.24.0/bin/linux/amd64/kubectl
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+
+    # Authenticate to OVH Kubernetes cluster
+    - name: Authenticate to OVH Kubernetes cluster
+      run: |
+        echo "${{ secrets.OVH_KUBECONFIG }}" > $HOME/.kube/config
+        # Alternatively, if you're using a token, you can authenticate using kubectl config
 
     # Set up GitHub authentication using GitHub's token to access the registry
     - name: Log in to GitHub Container Registry
