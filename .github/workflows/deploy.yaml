@@ -30,7 +30,7 @@ jobs:
     # Authenticate to OVH Kubernetes cluster
     - name: Authenticate to OVH Kubernetes cluster
       run: |
-        echo "${{ secrets.OVH_KUBECONFIG }}" > $HOME/.kube/config
+        echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
         # Alternatively, if you're using a token, you can authenticate using kubectl config
 
     # Set up GitHub authentication using GitHub's token to access the registry
