@@ -41,38 +41,29 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token to access the container registry
 
-    # Apply Kubernetes Secret for GHCR (create or update)
+    # For GHCR Secret
     - name: Apply Kubernetes Secret for GHCR
       run: |
-        kubectl apply -f - <<EOF
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: ghcr-secret
-          namespace: real-estate-prod
-        type: Opaque
-        data:
-          .dockerconfigjson: $(echo -n '{"auths":{"ghcr.io":{"username":"'"${{ github.actor }}"'","password":"'"${{ secrets.GITHUB_TOKEN }}"'"}}}' | base64)
-        EOF
+        kubectl create namespace real-estate-prod --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create secret docker-registry ghcr-secret \
+          --namespace=real-estate-prod \
+          --docker-server=ghcr.io \
+          --docker-username=${{ github.actor }} \
+          --docker-password=${{ secrets.GITHUB_TOKEN }} \
+          --dry-run=client -o yaml | kubectl apply -f -
 
-    # Apply Kubernetes Secret for PostgreSQL credentials (create or update)
+    # For PostgreSQL Secret
     - name: Apply Kubernetes Secret for PostgreSQL
       run: |
-        kubectl apply -f - <<EOF
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: db-secret
-          namespace: real-estate-prod
-        type: Opaque
-        data:
-          DB_HOST: $(echo -n "postgresql-service.real-estate-prod.svc.cluster.local" | base64)
-          DB_PORT: $(echo -n "5432" | base64)
-          DB_USER: $(echo -n "${{ secrets.DB_USER }}" | base64)
-          DB_PASSWORD: $(echo -n "${{ secrets.DB_PASSWORD }}" | base64)
-          DB_NAME: $(echo -n "${{ secrets.DB_NAME }}" | base64)
-          DB_SSL_MODE: $(echo -n "${{ secrets.DB_SSL_MODE }}" | base64)
-        EOF
+        kubectl create secret generic db-secret \
+          --namespace=real-estate-prod \
+          --from-literal=DB_HOST="postgresql-service.real-estate-prod.svc.cluster.local" \
+          --from-literal=DB_PORT="5432" \
+          --from-literal=DB_USER="${{ secrets.DB_USER }}" \
+          --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+          --from-literal=DB_NAME="${{ secrets.DB_NAME }}" \
+          --from-literal=DB_SSL_MODE="${{ secrets.DB_SSL_MODE }}" \
+          --dry-run=client -o yaml | kubectl apply -f -
 
     # Deploy PostgreSQL to Kubernetes
     - name: Deploy PostgreSQL to Kubernetes
