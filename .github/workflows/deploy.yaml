@@ -41,20 +41,33 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}  # GitHub token to access the container registry
 
-    # For GHCR Secret
+    # Create or update namespace
+    - name: Create namespace
+      run: |
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: real-estate-prod
+          labels:
+            name: real-estate-prod
+        EOF
+
+    # Create or update GHCR secret
     - name: Apply Kubernetes Secret for GHCR
       run: |
-        kubectl create namespace real-estate-prod --dry-run=client -o yaml | kubectl apply -f -
+        kubectl delete secret ghcr-secret --namespace=real-estate-prod --ignore-not-found
         kubectl create secret docker-registry ghcr-secret \
           --namespace=real-estate-prod \
           --docker-server=ghcr.io \
           --docker-username=${{ github.actor }} \
           --docker-password=${{ secrets.GITHUB_TOKEN }} \
-          --dry-run=client -o yaml | kubectl apply -f -
+          --save-config
 
-    # For PostgreSQL Secret
+    # Create or update PostgreSQL secret
     - name: Apply Kubernetes Secret for PostgreSQL
       run: |
+        kubectl delete secret db-secret --namespace=real-estate-prod --ignore-not-found
         kubectl create secret generic db-secret \
           --namespace=real-estate-prod \
           --from-literal=DB_HOST="postgresql-service.real-estate-prod.svc.cluster.local" \
@@ -63,16 +76,16 @@ jobs:
           --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
           --from-literal=DB_NAME="${{ secrets.DB_NAME }}" \
           --from-literal=DB_SSL_MODE="${{ secrets.DB_SSL_MODE }}" \
-          --dry-run=client -o yaml | kubectl apply -f -
+          --save-config
 
     # Deploy PostgreSQL to Kubernetes
     - name: Deploy PostgreSQL to Kubernetes
       run: |
-        kubectl apply -f k8s/postgresql.yaml
+        kubectl apply -f deployments/k8s/postgresql.yaml
         kubectl rollout status deployment/postgresql -n real-estate-prod
 
     # Deploy Go Application to Kubernetes
     - name: Deploy Go Application to Kubernetes
       run: |
-        kubectl apply -f k8s/app.yaml
+        kubectl apply -f deployments/k8s/app.yaml
         kubectl rollout status deployment/real-estate-management -n real-estate-prod
