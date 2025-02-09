@@ -18,7 +18,7 @@ type DatabaseConfig struct {
 }
 
 type AppConfig struct {
-	Port     int    `env:"SERVER_PORT,required"`
+	Port     int    `env:"SERVER_PORT" envDefault:"8080"`
 	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
 }
 
