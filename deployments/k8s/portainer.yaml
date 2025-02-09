@@ -21,10 +21,12 @@ spec:
           volumeMounts:
             - name: portainer-data
               mountPath: /data
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
       volumes:
         - name: portainer-data
           emptyDir: {}
-
 ---
 apiVersion: v1
 kind: Service
@@ -36,20 +38,29 @@ spec:
     app: portainer
   ports:
     - protocol: TCP
-      port: 80    # External port
-      targetPort: 9000  # Port inside the container
-  type: ClusterIP  # Expose the service internally (no LoadBalancer)
-
+      port: 80
+      targetPort: 9000
+  type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: portainer-ingress
   namespace: real-estate-prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    # Enable WebSocket support
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   ingressClassName: nginx
   rules:
-    - host: portainer.softcelia.com  # Expose using your subdomain
+    - host: portainer.softcelia.com
       http:
         paths:
           - path: /

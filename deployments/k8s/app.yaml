@@ -51,7 +51,6 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: DB_SSL_MODE
-
 ---
 apiVersion: v1
 kind: Service
@@ -63,20 +62,21 @@ spec:
     app: real-estate-management
   ports:
     - protocol: TCP
-      port: 80    # External port for access
-      targetPort: 8080   # Internal container port
-  type: ClusterIP  # Service will be accessible only inside the cluster
-
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: real-estate-ingress
   namespace: real-estate-prod
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-    - host: real-estate-management.app.softcelia.com  # Your domain to access the app externally
+    - host: real-estate-management.app.softcelia.com
       http:
         paths:
           - path: /
