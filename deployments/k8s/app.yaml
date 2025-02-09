@@ -75,7 +75,7 @@ metadata:
   namespace: real-estate-prod
 spec:
   rules:
-    - host: real-estate.softcelia.com  # Change to your domain
+    - host: real-estate-managemt.apps.softcelia.com  # Change to your domain
       http:
         paths:
           - path: /
