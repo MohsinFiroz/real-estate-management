@@ -14,8 +14,11 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
+# Change working directory to the correct location (where main.go is)
+WORKDIR /app/cmd
+
 # Build the application
-RUN go build -o real-estate-management
+RUN go build -o /app/real-estate-management
 
 # Stage 2: Minimal Runtime
 FROM alpine:latest
