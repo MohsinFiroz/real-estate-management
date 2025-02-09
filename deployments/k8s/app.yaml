@@ -74,6 +74,7 @@ metadata:
   name: real-estate-ingress
   namespace: real-estate-prod
 spec:
+  ingressClassName: nginx
   rules:
     - host: real-estate-management.app.softcelia.com  # Your domain to access the app externally
       http:

@@ -47,6 +47,7 @@ metadata:
   name: portainer-ingress
   namespace: real-estate-prod
 spec:
+  ingressClassName: nginx
   rules:
     - host: portainer.softcelia.com  # Expose using your subdomain
       http:
