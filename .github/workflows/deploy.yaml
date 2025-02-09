@@ -84,6 +84,15 @@ jobs:
         kubectl apply -f deployments/k8s/postgresql.yaml
         kubectl rollout status deployment/postgresql -n real-estate-prod
 
+    - name: Build Docker image
+      run: |
+        docker build -t ghcr.io/${{ github.repository }}/real-estate-management:latest .
+
+    - name: Push Docker image
+      run: |
+        docker push ghcr.io/${{ github.repository }}/real-estate-management:latest
+
+
     # Deploy Go Application to Kubernetes
     - name: Deploy Go Application to Kubernetes
       run: |
