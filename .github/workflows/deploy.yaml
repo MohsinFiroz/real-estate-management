@@ -82,13 +82,26 @@ jobs:
           --from-literal=DB_NAME="${{ secrets.DB_NAME }}" \
           --from-literal=DB_SSL_MODE="${{ secrets.DB_SSL_MODE }}" \
           --save-config
+    
+    # Install NGINX Ingress Controller with ClusterIP
+    - name: Install NGINX Ingress Controller
+      run: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+        # kubectl -n ingress-nginx patch svc ingress-nginx-controller -p '{"spec": {"type": "ClusterIP"}}'
 
-    # Deploy PostgreSQL to Kubernetes
+    # **Separate Job: Deploy Portainer** (Can manage multiple namespaces)
+    - name: Deploy Portainer to Kubernetes
+      run: |
+        kubectl apply -f deployments/k8s/portainer.yaml
+        kubectl rollout status deployment/portainer -n real-estate-prod
+
+    # **Deploy PostgreSQL to Kubernetes**
     - name: Deploy PostgreSQL to Kubernetes
       run: |
         kubectl apply -f deployments/k8s/postgresql.yaml
         kubectl rollout status deployment/postgresql -n real-estate-prod
 
+    # **Build and Push Docker Image**
     - name: Build and Push Docker Image
       run: |
         REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
@@ -100,8 +113,7 @@ jobs:
         echo "Pushing image: $IMAGE_NAME"
         docker push $IMAGE_NAME
 
-
-    # Deploy Go Application to Kubernetes
+    # **Deploy Go Application to Kubernetes**
     - name: Deploy Go Application to Kubernetes
       run: |
         kubectl apply -f deployments/k8s/app.yaml
