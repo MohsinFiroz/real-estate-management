@@ -17,7 +17,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: real-estate-management
-          image: ghcr.io/MohsinFiroz/real-estate-management:latest
+          image: ghcr.io/mohsinfiroz/real-estate-management:latest
           ports:
             - containerPort: 8080
           env:
