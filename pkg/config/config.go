@@ -14,7 +14,7 @@ type DatabaseConfig struct {
 	User     string `env:"DB_USER,required"`
 	Password string `env:"DB_PASSWORD,required"`
 	Name     string `env:"DB_NAME,required"`
-	SSLMode  string `env:"DB_SSL_MODE" envDefault:"disable"`
+	SSLMode  string `env:"DB_SSL_MODE" envDefault:"prefer"`
 }
 
 type AppConfig struct {
