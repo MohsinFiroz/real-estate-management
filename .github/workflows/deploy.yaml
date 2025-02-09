@@ -86,11 +86,14 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ghcr.io/${{ github.repository }}/real-estate-management:latest .
+        IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+        docker build -t $IMAGE_NAME:latest .
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
     - name: Push Docker image
       run: |
-        docker push ghcr.io/${{ github.repository }}/real-estate-management:latest
+        docker push $IMAGE_NAME:latest
+
 
 
     # Deploy Go Application to Kubernetes
