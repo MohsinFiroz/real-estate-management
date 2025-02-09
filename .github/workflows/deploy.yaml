@@ -87,7 +87,7 @@ jobs:
     - name: Install NGINX Ingress Controller
       run: |
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
-        # kubectl -n ingress-nginx patch svc ingress-nginx-controller -p '{"spec": {"type": "ClusterIP"}}'
+        kubectl -n ingress-nginx patch svc ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
 
     # **Separate Job: Deploy Portainer** (Can manage multiple namespaces)
     - name: Deploy Portainer to Kubernetes
