@@ -146,7 +146,7 @@ jobs:
           # Create and configure reverse proxy for Real Estate Management
           sudo bash -c 'echo "server {
               listen 80;
-              server_name real-state-management.softcelia.com;
+              server_name real-estate-management.softcelia.com;
 
               location / {
                   proxy_pass http://localhost:8080;
@@ -179,7 +179,7 @@ jobs:
           sudo ln -s /etc/nginx/sites-available/portainer /etc/nginx/sites-enabled/
 
           # Obtain SSL certificates with Certbot
-          sudo certbot --nginx -d real-state-management.softcelia.com -d db.softcelia.com -d portainer.softcelia.com --non-interactive --agree-tos --email m7firoz@gmail.com
+          sudo certbot --nginx -d real-estate-management.softcelia.com -d db.softcelia.com -d portainer.softcelia.com --non-interactive --agree-tos --email m7firoz@gmail.com
 
           # Reload Nginx to apply changes
           sudo systemctl reload nginx
