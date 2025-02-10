@@ -9,6 +9,7 @@ spec:
   resources:
     requests:
       storage: 2Gi
+  storageClassName: standard  # Set your StorageClass if needed
 ---
 apiVersion: apps/v1
 kind: Deployment

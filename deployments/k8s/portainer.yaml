@@ -1,4 +1,3 @@
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -9,8 +8,8 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi  # Adjust the storage size as needed
-  storageClassName: standard  # Set your StorageClass if needed
+      storage: 10Gi  # Adjust as needed
+  storageClassName: standard  # Ensure this matches your cluster's available StorageClass
 
 ---
 apiVersion: apps/v1
@@ -43,7 +42,6 @@ spec:
         - name: portainer-data
           persistentVolumeClaim:
             claimName: portainer-data  # Reference to the PVC
-
 ---
 apiVersion: v1
 kind: Service
@@ -72,13 +70,12 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-    # Enable WebSocket support
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   ingressClassName: nginx
   rules:
-    - host: portainer.softcelia.com  # Replace with your actual domain
+    - host: portainer.softcelia.com  # Replace with your domain
       http:
         paths:
           - path: /
