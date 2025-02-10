@@ -1,3 +1,18 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: portainer-data
+  namespace: real-estate-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi  # Adjust the storage size as needed
+  storageClassName: standard  # Set your StorageClass if needed
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +41,9 @@ spec:
             runAsGroup: 1000
       volumes:
         - name: portainer-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: portainer-data  # Reference to the PVC
+
 ---
 apiVersion: v1
 kind: Service
@@ -41,6 +58,7 @@ spec:
       port: 80
       targetPort: 9000
   type: ClusterIP
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -60,7 +78,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: portainer.softcelia.com
+    - host: portainer.softcelia.com  # Replace with your actual domain
       http:
         paths:
           - path: /
