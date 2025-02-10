@@ -1,8 +1,8 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: local-storage
-provisioner: kubernetes.io/no-provisioner
+  name: longhorn-storage
+provisioner: driver.longhorn.io
 volumeBindingMode: WaitForFirstConsumer
 ---
 apiVersion: v1
@@ -16,8 +16,7 @@ spec:
   resources:
     requests:
       storage: 10Gi  # Adjust as needed
-  storageClassName: local-storage  # Ensure this matches your cluster's available StorageClass
-
+  storageClassName: longhorn-storage  # Updated to use Longhorn's storage class
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -63,7 +62,6 @@ spec:
       port: 80
       targetPort: 9000
   type: ClusterIP
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
