@@ -159,7 +159,7 @@ jobs:
               server_name db.softcelia.com;
 
               location / {
-                  proxy_pass http://softcelia:5432;
+                  proxy_pass http://localhost:5432;
               }
           }" > /etc/nginx/sites-available/postgres-db'
 
