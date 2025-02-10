@@ -139,50 +139,46 @@ jobs:
     - name: Set up reverse proxy with Nginx
       run: |
         sshpass -p "${{ secrets.DOCKER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.DOCKER_USER }}@${{ secrets.DOCKER_SERVER_IP }} << EOF
+          # Update and install necessary packages
           sudo apt-get update
           sudo apt-get install -y nginx certbot python3-certbot-nginx
 
-          # Reverse Proxy for Real Estate Management
-          sudo bash -c 'cat > /etc/nginx/sites-available/real-estate-management << EOL
-          server {
+          # Create and configure reverse proxy for Real Estate Management
+          sudo bash -c 'echo "server {
               listen 80;
               server_name real-state-management.softcelia.com;
 
               location / {
                   proxy_pass http://localhost:8080;
               }
-          }
-          EOL'
+          }" > /etc/nginx/sites-available/real-estate-management'
 
-          # Reverse Proxy for PostgreSQL (if needed)
-          sudo bash -c 'cat > /etc/nginx/sites-available/postgres-db << EOL
-          server {
+          # Create and configure reverse proxy for PostgreSQL (if needed)
+          sudo bash -c 'echo "server {
               listen 80;
               server_name db.softcelia.com;
 
               location / {
                   proxy_pass http://softcelia:5432;
               }
-          }
-          EOL'
+          }" > /etc/nginx/sites-available/postgres-db'
 
-          # Reverse Proxy for Portainer
-          sudo bash -c 'cat > /etc/nginx/sites-available/portainer << EOL
-          server {
+          # Create and configure reverse proxy for Portainer
+          sudo bash -c 'echo "server {
               listen 80;
               server_name portainer.softcelia.com;
 
               location / {
                   proxy_pass http://localhost:9000;
               }
-          }
-          EOL'
+          }" > /etc/nginx/sites-available/portainer'
 
+          # Create symlinks for the new site configurations
           sudo ln -s /etc/nginx/sites-available/real-estate-management /etc/nginx/sites-enabled/
           sudo ln -s /etc/nginx/sites-available/postgres-db /etc/nginx/sites-enabled/
           sudo ln -s /etc/nginx/sites-available/portainer /etc/nginx/sites-enabled/
 
-          # Obtain SSL certificate with Certbot
+          # Obtain SSL certificates with Certbot
           sudo certbot --nginx -d real-state-management.softcelia.com -d db.softcelia.com -d portainer.softcelia.com --non-interactive --agree-tos --email m7firoz@gmail.com
 
           # Reload Nginx to apply changes
