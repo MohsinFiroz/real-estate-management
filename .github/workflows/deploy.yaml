@@ -83,10 +83,27 @@ jobs:
           --from-literal=DB_SSL_MODE="${{ secrets.DB_SSL_MODE }}" \
           --save-config
     
-    # Install NGINX Ingress Controller with ClusterIP
-    - name: Install NGINX Ingress Controller
+    - name: Install Helm
       run: |
-        kubectl apply -f deployments/k8s/nginx-ingress.yaml
+        curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Install NGINX Ingress Controller using Helm
+      run: |
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm repo update
+        helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+          --namespace ingress-nginx --create-namespace \
+          --set controller.ingressClassResource.name=nginx
+
+    - name: Wait for NGINX Ingress Controller to be ready
+      run: |
+        kubectl wait --namespace ingress-nginx \
+          --for=condition=available deployment/ingress-nginx-controller \
+          --timeout=120s
+
+    - name: Check NGINX Ingress Controller services
+      run: |
+        kubectl get svc -n ingress-nginx
 
     # **Separate Job: Deploy Portainer** (Can manage multiple namespaces)
     - name: Deploy Portainer to Kubernetes
