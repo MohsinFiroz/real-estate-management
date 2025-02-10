@@ -142,23 +142,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y nginx certbot python3-certbot-nginx
 
-          # Configure reverse proxy for the app
-          sudo bash -c 'cat > /etc/nginx/sites-available/real-estate-management<< EOL
+          # Reverse Proxy for Real Estate Management
+          sudo bash -c 'cat > /etc/nginx/sites-available/real-estate-management << EOL
           server {
               listen 80;
               server_name real-state-management.softcelia.com;
 
               location / {
                   proxy_pass http://localhost:8080;
-                  proxy_set_header Host \$host;
-                  proxy_set_header X-Real-IP \$remote_addr;
-                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                  proxy_set_header X-Forwarded-Proto \$scheme;
               }
           }
           EOL'
 
-          # Configure reverse proxy for PostgreSQL (if needed)
+          # Reverse Proxy for PostgreSQL (if needed)
           sudo bash -c 'cat > /etc/nginx/sites-available/postgres-db << EOL
           server {
               listen 80;
@@ -166,15 +162,11 @@ jobs:
 
               location / {
                   proxy_pass http://softcelia:5432;
-                  proxy_set_header Host \$host;
-                  proxy_set_header X-Real-IP \$remote_addr;
-                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                  proxy_set_header X-Forwarded-Proto \$scheme;
               }
           }
           EOL'
 
-          # Configure reverse proxy for Portainer
+          # Reverse Proxy for Portainer
           sudo bash -c 'cat > /etc/nginx/sites-available/portainer << EOL
           server {
               listen 80;
@@ -182,10 +174,6 @@ jobs:
 
               location / {
                   proxy_pass http://localhost:9000;
-                  proxy_set_header Host \$host;
-                  proxy_set_header X-Real-IP \$remote_addr;
-                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                  proxy_set_header X-Forwarded-Proto \$scheme;
               }
           }
           EOL'
