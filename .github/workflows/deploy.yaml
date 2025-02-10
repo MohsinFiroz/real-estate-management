@@ -39,7 +39,7 @@ jobs:
         IMAGE_NAME="ghcr.io/$REPO_NAME:latest"
 
         echo "Building image: $IMAGE_NAME"
-        docker build -t $IMAGE_NAME .
+        docker build -t $IMAGE_NAME.
 
         echo "Pushing image: $IMAGE_NAME"
         docker push $IMAGE_NAME
@@ -154,14 +154,14 @@ jobs:
           }
           EOL'
 
-          # Reverse Proxy for PostgreSQL (if needed)
+          # Reverse Proxy for PostgreSQL (if needed) - **Note: Exposing your database directly is not recommended for security reasons.**
           sudo bash -c 'cat > /etc/nginx/sites-available/postgres-db << EOL
           server {
               listen 80;
               server_name db.softcelia.com;
 
               location / {
-                  proxy_pass http://softcelia:5432;
+                  proxy_pass http://localhost:5432; # Changed to localhost 
               }
           }
           EOL'
