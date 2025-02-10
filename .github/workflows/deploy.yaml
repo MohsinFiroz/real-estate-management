@@ -190,7 +190,7 @@ jobs:
           }
           EOL'
 
-          sudo ln -s /etc/nginx/sites-available/real-estate-management/etc/nginx/sites-enabled/
+          sudo ln -s /etc/nginx/sites-available/real-estate-management /etc/nginx/sites-enabled/
           sudo ln -s /etc/nginx/sites-available/postgres-db /etc/nginx/sites-enabled/
           sudo ln -s /etc/nginx/sites-available/portainer /etc/nginx/sites-enabled/
 
