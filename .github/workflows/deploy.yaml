@@ -56,6 +56,9 @@ jobs:
           docker stop real-estate-management|| true
           docker rm real-estate-management|| true
 
+          # Convert repo name to lowercase
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
           # Run the application container
           docker run -d \
             --name real-estate-management\
@@ -67,7 +70,7 @@ jobs:
             -e DB_NAME=${{ secrets.DB_NAME }} \
             -e DB_SSL_MODE=${{ secrets.DB_SSL_MODE }} \
             -p 8080:8080 \
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/$REPO_NAME:latest
 
     # Deploy PostgreSQL container with persistence
     - name: Deploy PostgreSQL container
