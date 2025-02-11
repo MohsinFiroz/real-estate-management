@@ -56,7 +56,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           script_stop: true
           script: |
-            bash ~/deployment/scripts/deploy-portainer.sh
+            ls
+            pwd
+            cd deployment
+            ls
+            bash deployment/scripts/deploy-portainer.sh
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v0.1.5
