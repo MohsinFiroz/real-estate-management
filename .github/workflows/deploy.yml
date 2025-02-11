@@ -45,6 +45,8 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
         script: |
+          pwd
+          ls
           bash /deployment/scripts/deploy-app.sh \
             "${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.actor }}" \
