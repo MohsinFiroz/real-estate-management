@@ -60,7 +60,9 @@ jobs:
             pwd
             cd deployment
             ls
-            bash deployment/scripts/deploy-portainer.sh
+            cd scripts
+            ls
+            bash /deployment/scripts/deploy-portainer.sh
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v0.1.5
