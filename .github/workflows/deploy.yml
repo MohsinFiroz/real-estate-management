@@ -36,6 +36,7 @@ jobs:
         IMAGE_NAME="ghcr.io/$REPO_NAME:latest"
         docker build -t $IMAGE_NAME -f Dockerfile .
         docker push $IMAGE_NAME
+        pwd
 
     - name: Deploy Application
       uses: appleboy/ssh-action@v0.1.5
@@ -45,6 +46,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
         script: |
+          pwd
           bash deployment/scripts/deploy-app.sh \
             "${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.actor }}" \
@@ -64,6 +66,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
         script: |
+          pwd
           bash deployment/scripts/deploy-postgres.sh \
             "${{ secrets.DB_USER }}" \
             "${{ secrets.DB_PASSWORD }}" \
