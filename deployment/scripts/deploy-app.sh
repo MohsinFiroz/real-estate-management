@@ -1,4 +1,5 @@
 #!/bin/bash
+
 GITHUB_TOKEN=$1
 GITHUB_ACTOR=$2
 REPO_NAME=$(echo "$3" | tr '[:upper:]' '[:lower:]')

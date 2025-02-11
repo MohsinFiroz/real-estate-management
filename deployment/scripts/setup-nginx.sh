@@ -2,9 +2,6 @@
 sudo apt-get update
 sudo apt-get install -y nginx certbot python3-certbot-nginx
 
-# Copy Nginx configuration files
-sudo cp /deployment/docker/nginx/conf.d/*.conf /etc/nginx/conf.d/
-
 # Obtain SSL certificates
 sudo certbot --nginx \
   -d real-estate-management.softcelia.com \

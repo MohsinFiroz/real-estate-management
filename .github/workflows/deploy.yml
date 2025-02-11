@@ -45,19 +45,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           script_stop: true
           script: |
-            # Create deployment directory if it doesn't exist
-            mkdir -p ~/deployment/scripts
-            
-            # Copy deployment scripts from repository to server
-            cp ./deployment/scripts/deploy-app.sh ~/deployment/scripts/
-            cp ./deployment/scripts/deploy-postgres.sh ~/deployment/scripts/
-            cp ./deployment/scripts/deploy-portainer.sh ~/deployment/scripts/
-            cp ./deployment/scripts/setup-nginx.sh ~/deployment/scripts/
-            
-            # Make scripts executable
-            chmod +x ~/deployment/scripts/*.sh
-            
-            # Execute deployment script
+            cp deployment/scripts/deploy-app.sh ~/deployment/scripts/
             bash ~/deployment/scripts/deploy-app.sh \
               "${{ secrets.GITHUB_TOKEN }}" \
               "${{ github.actor }}" \
@@ -68,6 +56,7 @@ jobs:
               "${{ secrets.DB_PASSWORD }}" \
               "${{ secrets.DB_NAME }}" \
               "${{ secrets.DB_SSL_MODE }}"
+            rm -f ~/deployment/scripts/deploy-app.sh
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v0.1.5
@@ -77,10 +66,12 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           script_stop: true
           script: |
+            cp deployment/scripts/deploy-postgres.sh ~/deployment/scripts/
             bash ~/deployment/scripts/deploy-postgres.sh \
               "${{ secrets.DB_USER }}" \
               "${{ secrets.DB_PASSWORD }}" \
               "${{ secrets.DB_NAME }}"
+            rm -f ~/deployment/scripts/deploy-postgres.sh
 
       - name: Deploy Portainer
         uses: appleboy/ssh-action@v0.1.5
@@ -89,7 +80,10 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           script_stop: true
-          script: bash ~/deployment/scripts/deploy-portainer.sh
+          script: |
+            cp deployment/scripts/deploy-portainer.sh ~/deployment/scripts/
+            bash ~/deployment/scripts/deploy-portainer.sh
+            rm -f ~/deployment/scripts/deploy-portainer.sh
 
       - name: Setup Nginx
         uses: appleboy/ssh-action@v0.1.5
@@ -98,4 +92,9 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           script_stop: true
-          script: bash ~/deployment/scripts/setup-nginx.sh
+          script: |
+            cp deployment/scripts/setup-nginx.sh ~/deployment/scripts/
+            # Copy Nginx configuration files
+            sudo cp /deployment/docker/nginx/conf.d/*.conf /etc/nginx/conf.d/
+            bash ~/deployment/scripts/setup-nginx.sh
+            rm -f ~/deployment/scripts/setup-nginx.sh
