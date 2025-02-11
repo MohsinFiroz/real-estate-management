@@ -1,5 +1,4 @@
 #!/bin/bash
-
 GITHUB_TOKEN=$1
 GITHUB_ACTOR=$2
 REPO_NAME=$(echo "$3" | tr '[:upper:]' '[:lower:]')
@@ -10,6 +9,7 @@ DB_PASSWORD=$7
 DB_NAME=$8
 DB_SSL_MODE=$9
 
+# Log in to GitHub Container Registry
 echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
 
 docker stop real-estate-management || true
@@ -20,6 +20,7 @@ docker pull "ghcr.io/$REPO_NAME:latest"
 docker run -d \
   --name real-estate-management \
   --restart always \
+  --network app-network \
   -e DB_HOST="$DB_HOST" \
   -e DB_PORT="$DB_PORT" \
   -e DB_USER="$DB_USER" \

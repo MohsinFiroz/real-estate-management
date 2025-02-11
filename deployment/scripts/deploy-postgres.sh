@@ -3,6 +3,9 @@ DB_USER=$1
 DB_PASSWORD=$2
 DB_NAME=$3
 
+# Create the custom network
+docker network create app-network || true
+
 docker pull postgres:latest
 
 docker stop postgres-db || true
@@ -13,6 +16,7 @@ docker volume create postgres_data
 docker run -d \
   --name postgres-db \
   --restart always \
+  --network app-network \
   -e POSTGRES_USER="$DB_USER" \
   -e POSTGRES_PASSWORD="$DB_PASSWORD" \
   -e POSTGRES_DB="$DB_NAME" \
