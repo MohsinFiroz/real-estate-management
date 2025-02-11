@@ -105,7 +105,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           script_stop: true
           script: |
-            bash ~temp/deployment/scripts/setup-nginx.sh
+            bash temp/deployment/scripts/setup-nginx.sh
 
       - name: Cleanup Temporary Directory
         uses: appleboy/ssh-action@v0.1.5
