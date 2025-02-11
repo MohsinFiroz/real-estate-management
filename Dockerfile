@@ -32,15 +32,6 @@ WORKDIR /app
 # Copy the compiled binary
 COPY --from=builder /app/real-estate-management .
 
-# ✅ Copy the deployment scripts folder
-COPY --from=builder /app/deployment/scripts/ ./deployment/scripts/
-
-# ✅ Copy the Nginx configuration files
-COPY --from=builder /app/deployment/docker/nginx/conf.d/ ./deployment/docker/nginx/conf.d/
-
-# Ensure scripts are executable
-RUN chmod +x ./deployment/scripts/*.sh
-
 # Expose port 8080
 EXPOSE 8080
 
