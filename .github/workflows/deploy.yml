@@ -45,7 +45,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
         script: |
-          bash /opt/deployment/scripts/deploy-app.sh \
+          bash /deployment/scripts/deploy-app.sh \
             "${{ secrets.GITHUB_TOKEN }}" \
             "${{ github.actor }}" \
             "${{ github.repository }}" \
@@ -64,7 +64,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
         script: |
-          bash /opt/deployment/scripts/deploy-postgres.sh \
+          bash /deployment/scripts/deploy-postgres.sh \
             "${{ secrets.DB_USER }}" \
             "${{ secrets.DB_PASSWORD }}" \
             "${{ secrets.DB_NAME }}"
@@ -76,7 +76,7 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
-        script: bash /opt/deployment/scripts/deploy-portainer.sh
+        script: bash /deployment/scripts/deploy-portainer.sh
 
     - name: Setup Nginx
       uses: appleboy/ssh-action@v0.1.5
@@ -85,4 +85,4 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         script_stop: true
-        script: bash /opt/deployment/scripts/setup-nginx.sh
+        script: bash /deployment/scripts/setup-nginx.sh
