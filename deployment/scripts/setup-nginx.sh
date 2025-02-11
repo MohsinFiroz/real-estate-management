@@ -1,15 +1,118 @@
-#!/bin/bash
-sudo apt-get update
-sudo apt-get install -y nginx certbot python3-certbot-nginx
+name: Deploy to Docker Server
 
-# Obtain SSL certificates
-sudo certbot --nginx \
-  -d real-estate-management.softcelia.com \
-  -d db.softcelia.com \
-  -d portainer.softcelia.com \
-  --non-interactive \
-  --agree-tos \
-  --email m7firoz@gmail.com
+on:
+  push:
+    branches:
+      - main
 
-# Reload Nginx
-sudo systemctl reload nginx
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.23.6'
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Secure Copy Deployment Scripts
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          source: "deployment/scripts/*.sh"
+          target: "~/deployment/scripts/"
+
+      - name: Secure Copy Nginx Configurations
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          source: "deployment/docker/nginx/conf.d/*.conf"
+          target: "/etc/nginx/conf.d/"
+
+      - name: Deploy Portainer
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          script_stop: true
+          script: |
+            bash ~/deployment/scripts/deploy-portainer.sh
+
+      - name: Deploy Database
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          script_stop: true
+          script: |
+            bash ~/deployment/scripts/deploy-postgres.sh \
+              "${{ secrets.DB_USER }}" \
+              "${{ secrets.DB_PASSWORD }}" \
+              "${{ secrets.DB_NAME }}"
+
+      - name: Build and Push Docker Image
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME="ghcr.io/$REPO_NAME:latest"
+          docker build -t $IMAGE_NAME -f Dockerfile .
+          docker push $IMAGE_NAME
+
+      - name: Deploy Application
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          script_stop: true
+          script: |
+            bash ~/deployment/scripts/deploy-app.sh \
+              "${{ secrets.GITHUB_TOKEN }}" \
+              "${{ github.actor }}" \
+              "${{ github.repository }}" \
+              "${{ secrets.DB_HOST }}" \
+              "${{ secrets.DB_PORT }}" \
+              "${{ secrets.DB_USER }}" \
+              "${{ secrets.DB_PASSWORD }}" \
+              "${{ secrets.DB_NAME }}" \
+              "${{ secrets.DB_SSL_MODE }}"
+
+      - name: Setup Nginx and Certbot
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          script_stop: true
+          script: |
+            bash ~/deployment/scripts/setup-nginx.sh
+
+      - name: Cleanup Deployment Scripts and Nginx Configurations
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          script: |
+            rm -f ~/deployment/scripts/*.sh
+            # rm -f /etc/nginx/conf.d/*.conf
