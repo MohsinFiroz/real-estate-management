@@ -29,7 +29,7 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	api := app.Group("/v1")
 
 	// Monitor route
-	app.Get("/metrics", middleware.Monitor())
+	api.Get("/metrics", middleware.Monitor())
 
 	// User routes
 	users := api.Group("/users")
