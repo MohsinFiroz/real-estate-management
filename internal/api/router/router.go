@@ -11,6 +11,7 @@ import (
 
 func SetupRoutes(db *gorm.DB) *fiber.App {
 	app := fiber.New()
+	app.Use(middleware.Logger())
 
 	// Initialize repositories
 	propertyRepo := property.NewData(db)
@@ -26,6 +27,9 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 
 	// API routes
 	api := app.Group("/v1")
+
+	// Monitor route
+	app.Get("/metrics", middleware.Monitor())
 
 	// User routes
 	users := api.Group("/users")
