@@ -12,6 +12,7 @@ import (
 func SetupRoutes(db *gorm.DB) *fiber.App {
 	app := fiber.New()
 	app.Use(middleware.Logger())
+	app.Use(middleware.CORS())
 
 	// Initialize repositories
 	propertyRepo := property.NewData(db)
