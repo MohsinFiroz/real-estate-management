@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -15,6 +16,14 @@ type DatabaseConfig struct {
 	Password string `env:"DB_PASSWORD,required"`
 	Name     string `env:"DB_NAME,required"`
 	SSLMode  string `env:"DB_SSL_MODE" envDefault:"prefer"`
+}
+
+func (dbConfig *DatabaseConfig) GetDSN() string {
+	return fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password,
+		dbConfig.Name, dbConfig.SSLMode,
+	)
 }
 
 type AppConfig struct {

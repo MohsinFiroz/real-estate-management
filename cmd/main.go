@@ -2,27 +2,31 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"real-estate-management/internal/api/router"
 	"real-estate-management/pkg/config"
 	"real-estate-management/pkg/database"
+
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	// Load configuration
-	config := config.LoadConfig()
+	cfg := config.LoadConfig()
+
+	// Run database migrations before starting the server
+	database.MigrateDB(cfg.Database)
 
 	// Connect to database
-	db := database.ConnectDB(config.Database)
+	db := database.ConnectDB(cfg.Database)
 
 	// Initialize and start the server
 	app := router.SetupRoutes(db)
 
-	port := fmt.Sprintf(":%d", config.App.Port)
-	log.Printf("Starting server on port %s...", port)
+	port := fmt.Sprintf(":%d", cfg.App.Port)
+	log.Info().Msgf("Starting server on port %s...", port)
 
 	if err := app.Listen(port); err != nil {
-		log.Fatalf("Error starting server: %v", err)
+		log.Fatal().Err(err).Msg("Error starting server")
 	}
 }
