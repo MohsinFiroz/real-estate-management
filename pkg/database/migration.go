@@ -2,57 +2,61 @@ package database
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
-	"real-estate-management/pkg/config"
-
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"real-estate-management/pkg/config"
 )
 
-const migrationsPath = "deployment/migration"
+// CreateDB creates the database if it does not exist
+func CreateDB(dbConfig config.DatabaseConfig) {
+	// Connect to the PostgreSQL server (without specifying a database)
+	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable",
+		dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password)
 
-// MigrateDB applies database migrations
-func MigrateDB(dbConfig config.DatabaseConfig) {
-	log.Info().Msg("Starting database migration...")
-
-	m, err := migrate.New(
-		fmt.Sprintf("file://%s", migrationsPath),
-		dbConfig.GetDSN(),
-	)
+	// Open connection to the server
+	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to create migration instance")
+		log.Fatal().Err(err).Msg("failed to connect to PostgreSQL server")
 	}
 
-	err = m.Up()
+	// Create the database if it doesn't exist
+	err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", dbConfig.Name)).Error
 	if err != nil {
-		if errors.Is(err, migrate.ErrNoChange) {
-			log.Warn().Msg("No new migrations to apply")
-		} else {
-			log.Fatal().Err(err).Msg("Migration failed")
+		if err.Error() != "pq: database \"real-estate-management\" already exists" {
+			log.Fatal().Err(err).Msg("failed to create database")
 		}
+		log.Warn().Msg("Database already exists")
 	} else {
-		log.Info().Msg("Database migration completed successfully")
+		log.Info().Msg("Database created successfully")
 	}
+
 }
 
-// RollbackDB rolls back the last migration step
-func RollbackDB(dbConfig config.DatabaseConfig) {
-	log.Warn().Msg("Rolling back the last migration...")
+// MigrateDB applies database migrations using Golang Migrate
+func MigrateDB(dbConfig config.DatabaseConfig) {
+	// Set up the database connection string for migrations
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name)
 
+	// Create the migration instance
 	m, err := migrate.New(
-		fmt.Sprintf("file://%s", migrationsPath),
-		dbConfig.GetDSN(),
+		fmt.Sprintf("file://%s", "deployment/migrations"), // Path to your migration files
+		dsn,
 	)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to create migration instance")
 	}
 
-	err = m.Steps(-1)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Rollback failed")
+	// Run the migrations (apply up migrations)
+	err = m.Up()
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		log.Fatal().Err(err).Msg("Migration failed")
+	} else {
+		log.Info().Msg("Migrations applied successfully")
 	}
-
-	log.Info().Msg("Database rollback successful")
 }

@@ -14,7 +14,10 @@ func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
 
-	// Run database migrations before starting the server
+	// Create the database if it does not exist
+	database.CreateDB(cfg.Database)
+
+	// Run database migrations using Golang Migrate
 	database.MigrateDB(cfg.Database)
 
 	// Connect to database

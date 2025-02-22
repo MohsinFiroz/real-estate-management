@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"real-estate-management/pkg/config"
 	"time"
 
@@ -64,6 +65,12 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 
 // ConnectDB establishes database connection using global logger
 func ConnectDB(dbConfig config.DatabaseConfig) *gorm.DB {
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password,
+		dbConfig.Name, dbConfig.SSLMode,
+	)
+
 	// Create GORM logger
 	gormLogger := &GormLogger{
 		SlowThreshold: time.Second,
@@ -75,7 +82,7 @@ func ConnectDB(dbConfig config.DatabaseConfig) *gorm.DB {
 	}
 
 	// Attempt database connection
-	db, err := gorm.Open(postgres.Open(dbConfig.GetDSN()), gormConfig)
+	db, err := gorm.Open(postgres.Open(dsn), gormConfig)
 	if err != nil {
 		log.Fatal().
 			Err(err).
