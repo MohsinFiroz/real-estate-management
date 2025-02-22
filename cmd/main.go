@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"real-estate-management/pkg/logger"
 
 	"real-estate-management/internal/api/router"
 	"real-estate-management/pkg/config"
@@ -11,11 +12,11 @@ import (
 )
 
 func main() {
+	// Initialize logger
+	logger.InitGlobalLogger()
+
 	// Load configuration
 	cfg := config.LoadConfig()
-
-	// Create the database if it does not exist
-	database.CreateDB(cfg.Database)
 
 	// Run database migrations using Golang Migrate
 	database.MigrateDB(cfg.Database)
