@@ -32,8 +32,8 @@ WORKDIR /app
 # Copy the compiled binary
 COPY --from=builder /app/real-estate-management .
 
-# Copy the migration files
-COPY --from=builder /app/deployment/migration /deployment/migration
+# Copy the migration files to the correct location
+COPY --from=builder /app/deployment/migration /app/deployment/migration
 
 # Expose port 8080
 EXPOSE 8080
