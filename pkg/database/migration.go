@@ -1,14 +1,12 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"real-estate-management/pkg/config"
 )
 
@@ -19,22 +17,34 @@ func CreateDB(dbConfig config.DatabaseConfig) {
 		dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password)
 
 	// Open connection to the server
-	db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to PostgreSQL server")
 	}
+	defer db.Close()
 
-	// Create the database if it doesn't exist
-	err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", dbConfig.Name)).Error
+	// Check if the target database already exists
+	var exists bool
+	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = $1)", dbConfig.Name).Scan(&exists)
 	if err != nil {
-		if err.Error() != "pq: database \"real-estate-management\" already exists" {
-			log.Fatal().Err(err).Msg("failed to create database")
-		}
-		log.Warn().Msg("Database already exists")
-	} else {
-		log.Info().Msg("Database created successfully")
+		log.Fatal().Err(err).Msg("failed to check database existence")
 	}
 
+	// If the database doesn't exist, create it
+	if !exists {
+		_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", dbConfig.Name))
+		if err != nil {
+			if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "42P04" {
+				log.Warn().Msg("Database already exists")
+			} else {
+				log.Fatal().Err(err).Msg("failed to create database")
+			}
+		} else {
+			log.Info().Msg("Database created successfully")
+		}
+	} else {
+		log.Info().Msg("Database already exists")
+	}
 }
 
 // MigrateDB applies database migrations using Golang Migrate
