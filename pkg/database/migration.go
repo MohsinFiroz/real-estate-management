@@ -3,6 +3,8 @@ package database
 import (
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"real-estate-management/pkg/config"
@@ -14,9 +16,9 @@ func MigrateDB(dbConfig config.DatabaseConfig) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name)
 
-	// Create the migration instance
+	// Use a relative path for migrations
 	m, err := migrate.New(
-		fmt.Sprintf("file://%s", "deployment/migrations"), // Path to your migration files
+		"file://deployment/migration", // Relative path from WORKDIR
 		dsn,
 	)
 	if err != nil {
