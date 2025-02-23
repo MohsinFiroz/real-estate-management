@@ -1,31 +1,33 @@
-name: Update Contributor Stats
+name: Update README with Contributor Stats
 
 on:
   schedule:
-    - cron: "0 0 * * 1"  # Runs every Monday at midnight
-  workflow_dispatch:  # Allow manual execution
+    - cron: "0 0 * * 1"  # Every Monday at midnight
+  workflow_dispatch:  # Trigger manually if needed
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Install Dependencies
-        run: |
-          pip install git-fame
-          sudo apt update && sudo apt install -y cloc
+      - name: Set up Git
+        uses: actions/setup-git@v2
+        with:
+          email: ${{ github.actor }}@users.noreply.github.com  # Use the current GitHub user
+          name: ${{ github.actor }}  # Use the current GitHub user
 
-      - name: Run Contribution Update Script
+      - name: Run update_contributors.sh script
         run: bash deployment/scripts/update_contributors.sh
 
-      - name: Commit & Push Changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push changes
         run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --local user.name "${{ github.actor }}"  # Use the current GitHub user
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"  # Use the current GitHub user
           git add README.md
-          git commit -m "Updated contributor statistics" || exit 0
-          git push
+          git commit -m "Updated contributor statistics"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authentication
