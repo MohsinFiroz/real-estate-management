@@ -1,0 +1,31 @@
+name: Update Contributor Stats
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"  # Runs every Monday at midnight
+  workflow_dispatch:  # Allow manual execution
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          pip install git-fame
+          sudo apt update && sudo apt install -y cloc
+
+      - name: Run Contribution Update Script
+        run: bash update_contributors.sh
+
+      - name: Commit & Push Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add README.md
+          git commit -m "Updated contributor statistics" || exit 0
+          git push
