@@ -11,7 +11,7 @@ import (
 func InitGlobalLogger() {
 	// Configure console writer for colorful logs
 	consoleWriter := zerolog.ConsoleWriter{
-		Out:        os.Stderr,
+		Out:        os.Stdout,
 		TimeFormat: time.RFC3339,
 		NoColor:    false, // Enable color in logs
 	}
