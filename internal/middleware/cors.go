@@ -7,7 +7,8 @@ import (
 
 func CORS() fiber.Handler {
 	config := cors.Config{
-		AllowOrigins: "https://rem.softcelia.com",
+		//AllowOrigins: "https://rem.softcelia.com",
+		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}
 	return cors.New(config)

@@ -55,7 +55,7 @@ func (d *Data) GetAllUsers(page, pageSize int, searchQuery string, sortFields []
 
 	// Apply sorting
 	for _, sortField := range sortFields {
-		query = query.Order(fmt.Sprintf("%s %s", sortField.Field, sortField.Direction))
+		query = query.Order(fmt.Sprintf("%s %s", sortField.Field, sortField.Order))
 	}
 
 	// Count the total number of users

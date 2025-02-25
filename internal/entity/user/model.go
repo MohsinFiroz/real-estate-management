@@ -7,19 +7,28 @@ import (
 	"time"
 )
 
+// Role defines the user role type
+type Role string
+
+// User role constants
+const (
+	RoleAdmin Role = "admin"
+	RoleUser  Role = "user"
+)
+
 // User model representing a user record in the database
 type User struct {
-	ID        string    `json:"id" gorm:"column:id"`
-	Email     string    `json:"email" gorm:"column:email" validate:"required,email"`
-	Password  string    `json:"password" gorm:"column:password" validate:"required,min=8"`
-	FirstName string    `json:"firstName" gorm:"column:first_name" validate:"required"`
-	LastName  string    `json:"lastName" gorm:"column:last_name"`
-	Phone     string    `json:"phone" gorm:"column:phone" validate:"omitempty,e164" `
-	Role      string    `json:"role" gorm:"column:role" validate:"required,oneof=admin user"`
-	CreatedAt time.Time `json:"createdAt" gorm:"column:created_at"`
-	UpdatedAt time.Time `json:"updatedAt" gorm:"column:updated_at"`
-	LastLogin time.Time `json:"lastLogin" gorm:"column:last_login"`
-	IsActive  bool      `json:"isActive" gorm:"column:is_active"`
+	ID        string     `json:"id" gorm:"column:id"`
+	Email     string     `json:"email" gorm:"column:email" validate:"required,email"`
+	Password  string     `json:"password" gorm:"column:password" validate:"required,min=8"`
+	FirstName string     `json:"firstName" gorm:"column:first_name" validate:"required"`
+	LastName  string     `json:"lastName" gorm:"column:last_name"`
+	Phone     string     `json:"phone" gorm:"column:phone" validate:"omitempty,e164" `
+	Role      Role       `json:"role" gorm:"column:role" validate:"required,oneof=admin user"`
+	IsActive  bool       `json:"isActive" gorm:"column:is_active"`
+	LastLogin *time.Time `json:"lastLogin" gorm:"column:last_login"`
+	CreatedAt *time.Time `json:"createdAt" gorm:"column:created_at"`
+	UpdatedAt *time.Time `json:"updatedAt" gorm:"column:updated_at"`
 }
 
 // TableName specifies the table name for the User model
@@ -50,7 +59,8 @@ func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	}
 
 	// Add updated at time
-	u.UpdatedAt = time.Now()
+	now := time.Now()
+	u.UpdatedAt = &now
 
 	return nil
 }
