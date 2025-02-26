@@ -14,7 +14,7 @@ CREATE TABLE users
     created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     last_login    TIMESTAMP WITH TIME ZONE,
-    is_active     BOOLEAN                  DEFAULT true,
+    is_active     BOOLEAN                  DEFAULT true
 );
 
 -- Create index on email for faster lookups
