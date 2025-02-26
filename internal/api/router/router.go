@@ -1,6 +1,7 @@
 package router
 
 import (
+	"errors"
 	"real-estate-management/internal/entity/property"
 	"real-estate-management/internal/entity/user"
 	"real-estate-management/internal/middleware"
@@ -10,7 +11,30 @@ import (
 )
 
 func SetupRoutes(db *gorm.DB) *fiber.App {
-	app := fiber.New()
+	// Configure Fiber with custom error handling
+	app := fiber.New(fiber.Config{
+		// Enable custom error handling
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			// Handle errors thrown during routing
+			code := fiber.StatusInternalServerError
+
+			// Check if it's a Fiber error
+			var e *fiber.Error
+			if errors.As(err, &e) {
+				code = e.Code
+			}
+
+			// Return JSON error response with details
+			return c.Status(code).JSON(fiber.Map{
+				"success": false,
+				"error":   err.Error(),
+			})
+		},
+		// Display detailed error messages
+		EnablePrintRoutes: true,
+	})
+
+	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
 	app.Use(middleware.CORS())
 

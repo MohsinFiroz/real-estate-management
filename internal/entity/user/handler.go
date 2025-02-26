@@ -24,19 +24,13 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 	// Parse the request body into the user struct
 	var user User
 	if err := c.BodyParser(&user); err != nil {
-		log.Error().Err(err).Msg("Failed to parse request body")
 		return rest.BadRequest(c, "Invalid request data")
 	}
 
-	log.Debug().Msgf("Request body parsed successfully: %+v", user)
-
 	// Call service layer to create the user
 	if err := h.service.CreateUser(&user); err != nil {
-		log.Error().Err(err).Msg("Error occurred while creating user")
 		return rest.Error(c, err)
 	}
-
-	log.Info().Msg("User created successfully")
 
 	return rest.Success(c, fiber.Map{
 		"message": "User created successfully",
