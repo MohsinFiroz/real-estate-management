@@ -21,12 +21,12 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 	// Parse the request body into the user struct
 	var user User
 	if err := c.BodyParser(&user); err != nil {
-		return rest.BadRequest(c, "Invalid request data")
+		return rest.BadRequest(err)
 	}
 
 	// Call service layer to create the user
 	if err := h.service.CreateUser(&user); err != nil {
-		return rest.Error(c, err)
+		return rest.Error(err)
 	}
 
 	return rest.Success(c, fiber.Map{
@@ -41,7 +41,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 	// Call service layer to get user by ID
 	user, err := h.service.GetUserByID(id)
 	if err != nil {
-		return rest.Error(c, err)
+		return rest.Error(err)
 	}
 
 	return rest.Success(c, user)
@@ -51,12 +51,12 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 func (h *Handler) Update(c *fiber.Ctx) error {
 	var user User
 	if err := c.BodyParser(&user); err != nil {
-		return rest.BadRequest(c, "Invalid request data")
+		return rest.BadRequest(err)
 	}
 
 	// Call service layer to update the user
 	if err := h.service.UpdateUser(&user); err != nil {
-		return rest.Error(c, err)
+		return rest.Error(err)
 	}
 
 	return rest.Success(c, fiber.Map{
@@ -70,7 +70,7 @@ func (h *Handler) Delete(c *fiber.Ctx) error {
 
 	// Call service layer to delete the user
 	if err := h.service.DeleteUser(id); err != nil {
-		return rest.Error(c, err)
+		return rest.Error(err)
 	}
 
 	return rest.Success(c, fiber.Map{
@@ -84,18 +84,18 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("pageSize", "10"))
 	searchQuery := c.Query("searchQuery", "")
-	sortBy := c.Query("sortBy", "created_at")
+	sortBy := c.Query("sortBy", "createdAt")
 
 	// Parse sorting fields
 	sortFields, err := rest.ParseSortFields(SortColumnMap, sortBy)
 	if err != nil {
-		return rest.Error(c, err)
+		return rest.Error(err)
 	}
 
 	// Call service layer to get users
 	users, total, err := h.service.GetAllUsers(page, pageSize, searchQuery, sortFields)
 	if err != nil {
-		return rest.Error(c, err)
+		return rest.Error(err)
 	}
 
 	// Calculate total pages

@@ -17,16 +17,10 @@ func Success(c *fiber.Ctx, data interface{}) error {
 	})
 }
 
-func Error(c *fiber.Ctx, err error) error {
-	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-		"success": false,
-		"error":   err.Error(),
-	})
+func Error(err error) error {
+	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 }
 
-func BadRequest(c *fiber.Ctx, message string) error {
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"success": false,
-		"error":   message,
-	})
+func BadRequest(err error) error {
+	return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 }
