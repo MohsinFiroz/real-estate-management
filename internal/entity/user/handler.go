@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/rs/zerolog/log"
 	"real-estate-management/pkg/rest"
 	"strconv"
 )
@@ -19,8 +18,6 @@ func NewHandler(service *Service) *Handler {
 
 // Create handles creating a new user
 func (h *Handler) Create(c *fiber.Ctx) error {
-	log.Debug().Msg("Starting user creation process")
-
 	// Parse the request body into the user struct
 	var user User
 	if err := c.BodyParser(&user); err != nil {

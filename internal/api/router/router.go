@@ -30,8 +30,6 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 				"error":   err.Error(),
 			})
 		},
-		// Display detailed error messages
-		EnablePrintRoutes: true,
 	})
 
 	app.Use(middleware.Recover())
