@@ -52,12 +52,6 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 
 // BeforeUpdate hook to validate that the ID is a valid ULID before updating the user
 func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	// Validate User fields
-	err = validator.ValidateStruct(u)
-	if err != nil {
-		return err
-	}
-
 	// Add updated at time
 	now := time.Now()
 	u.UpdatedAt = &now
