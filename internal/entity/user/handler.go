@@ -86,6 +86,14 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	searchQuery := c.Query("searchQuery", "")
 	sortBy := c.Query("sortBy", "createdAt")
 
+	// Parse is_active parameter
+	isActiveParam := c.Query("isActive", "")
+	var isActive *bool
+	if isActiveParam != "" {
+		isActiveVal := isActiveParam == "true"
+		isActive = &isActiveVal
+	}
+
 	// Parse sorting fields
 	sortFields, err := rest.ParseSortFields(SortColumnMap, sortBy)
 	if err != nil {
@@ -93,7 +101,7 @@ func (h *Handler) List(c *fiber.Ctx) error {
 	}
 
 	// Call service layer to get users
-	users, total, err := h.service.GetAllUsers(page, pageSize, searchQuery, sortFields)
+	users, total, err := h.service.GetAllUsers(page, pageSize, searchQuery, sortFields, isActive)
 	if err != nil {
 		return rest.Error(err)
 	}

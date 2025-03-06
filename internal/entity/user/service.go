@@ -35,7 +35,7 @@ func (s *Service) DeleteUser(id string) error {
 }
 
 // GetAllUsers retrieves all users with pagination, search, and sorting capabilities
-func (s *Service) GetAllUsers(page, pageSize int, searchQuery string, sortFields []rest.SortField) ([]User, int64, error) {
+func (s *Service) GetAllUsers(page, pageSize int, searchQuery string, sortFields []rest.SortField, isActive *bool) ([]User, int64, error) {
 	// Get the users from the data layer
-	return s.data.GetAllUsers(page, pageSize, searchQuery, sortFields)
+	return s.data.GetAllUsers(page, pageSize, searchQuery, sortFields, isActive)
 }

@@ -40,30 +40,29 @@ func (d *Data) DeleteUser(id string) error {
 	return d.db.Delete(&User{}, "id = ?", id).Error
 }
 
-func (d *Data) GetAllUsers(page, pageSize int, searchQuery string, sortFields []rest.SortField) ([]User, int64, error) {
+func (d *Data) GetAllUsers(page, pageSize int, searchQuery string, sortFields []rest.SortField, isActive *bool) ([]User, int64, error) {
 	var users []User
 	var total int64
 
-	// Build the query
 	query := d.db.Model(&User{})
 
-	// Add search conditions
 	if searchQuery != "" {
 		query = query.Where("email ILIKE ? OR first_name ILIKE ? OR last_name ILIKE ?",
 			"%"+searchQuery+"%", "%"+searchQuery+"%", "%"+searchQuery+"%")
 	}
 
-	// Apply sorting
+	if isActive != nil {
+		query = query.Where("is_active = ?", *isActive)
+	}
+
 	for _, sortField := range sortFields {
 		query = query.Order(fmt.Sprintf("%s %s", sortField.Field, sortField.Order))
 	}
 
-	// Count the total number of users
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	// Paginate the results
 	if err := query.Offset((page - 1) * pageSize).Limit(pageSize).Find(&users).Error; err != nil {
 		return nil, 0, err
 	}

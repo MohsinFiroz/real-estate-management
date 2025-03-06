@@ -20,10 +20,10 @@ const (
 type User struct {
 	ID        string     `json:"id" gorm:"column:id"`
 	Email     string     `json:"email" gorm:"column:email" validate:"required,email"`
-	Password  string     `json:"password" gorm:"column:password" validate:"required,min=8"`
+	Password  string     `json:"password" gorm:"column:password"`
 	FirstName string     `json:"firstName" gorm:"column:first_name" validate:"required"`
 	LastName  string     `json:"lastName" gorm:"column:last_name"`
-	Phone     string     `json:"phone" gorm:"column:phone" validate:"omitempty,e164" `
+	Phone     string     `json:"phone" gorm:"column:phone" `
 	Role      Role       `json:"role" gorm:"column:role" validate:"required,oneof=admin user"`
 	IsActive  bool       `json:"isActive" gorm:"column:is_active"`
 	LastLogin *time.Time `json:"lastLogin" gorm:"column:last_login"`
