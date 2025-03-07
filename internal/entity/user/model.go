@@ -64,6 +64,9 @@ var SortColumnMap = map[string]string{
 	"firstName": "first_name",
 	"lastName":  "last_name",
 	"email":     "email",
+	"role":      "role",
+	"isActive":  "is_active",
+	"lastLogin": "last_login",
 	"createdAt": "created_at",
 	"updatedAt": "updated_at",
 }
