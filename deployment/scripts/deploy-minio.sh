@@ -20,8 +20,8 @@ mkdir -p ~/minio/config
 docker run -d \
   --name minio-server \
   --restart always \
-  -p 9000:9000 \
-  -p 9001:9001 \
+  -p 9000:8000 \
+  -p 9001:8001 \
   -v ~/minio/data:/data \
   -v ~/minio/config:/root/.minio \
   -e "MINIO_ROOT_USER=${MINIO_USER}" \
