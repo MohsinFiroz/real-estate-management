@@ -3,17 +3,18 @@ name: SSL Certificate Renewal
 on:
   schedule:
     - cron: '0 0 1 */3 *'  # Run every 3 months
+  workflow_dispatch:  # Manually triggerable
 
 jobs:
   renew-ssl:
     runs-on: ubuntu-latest
     steps:
-    - name: Renew SSL Certificates
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.DOCKER_SERVER_IP }}
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        script: |
-          sudo certbot renew --quiet
-          sudo systemctl reload nginx
+      - name: Renew SSL Certificates
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.DOCKER_SERVER_IP }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          script: |
+            sudo certbot renew --quiet
+            sudo systemctl reload nginx
