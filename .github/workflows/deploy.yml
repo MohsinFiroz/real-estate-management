@@ -82,7 +82,6 @@ jobs:
             bash ~/temp/deployment/scripts/deploy-minio.sh \
               "${{ secrets.MINIO_ROOT_USER }}" \
               "${{ secrets.MINIO_ROOT_PASSWORD }}" \
-              "${{ secrets.MINIO_DOMAIN }}"
 
       - name: Build and Push Docker Image
         run: |
