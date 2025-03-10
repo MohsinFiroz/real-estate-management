@@ -20,13 +20,13 @@ mkdir -p ~/minio/config
 docker run -d \
   --name minio-server \
   --restart always \
-  -p 9000:8000 \
-  -p 9001:8001 \
+  -p 8000:8000 \
+  -p 8001:8001 \
   -v ~/minio/data:/data \
   -v ~/minio/config:/root/.minio \
   -e "MINIO_ROOT_USER=${MINIO_USER}" \
   -e "MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}" \
-  minio/minio:latest server /data --console-address ":9001"
+  minio/minio:latest server /data --console-address ":8001"
 
-echo "MinIO deployed successfully on ports 9000 (API) and 9001 (Console)"
+echo "MinIO deployed successfully on ports 8000 (API) and 8001 (Console)"
 echo "Access the MinIO Console at http://$DOMAIN:9001"
