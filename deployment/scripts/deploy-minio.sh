@@ -21,8 +21,8 @@ docker run -d \
   --name minio-server \
   --restart always \
   --network app-network \
-  -p 9100:9100 \
-  -p 9101:9101 \
+  -p 9100:9000 \
+  -p 9101:9001 \
   -v ~/minio/data:/data \
   -v ~/minio/config:/root/.minio \
   -e "MINIO_ROOT_USER=${MINIO_USER}" \
