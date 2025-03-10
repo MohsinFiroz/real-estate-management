@@ -26,6 +26,8 @@ docker run -d \
   -v ~/minio/config:/root/.minio \
   -e "MINIO_ROOT_USER=${MINIO_USER}" \
   -e "MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}" \
+  -e "MINIO_BROWSER_REDIRECT_URL=https://minio-console.softcelia.com" \
+  -e "MINIO_SERVER_URL=https://minio.softcelia.com" \
   minio/minio:latest server /data --console-address ":9101"
 
 echo "MinIO deployed successfully on ports 9100 (API) and 9101 (Console)"
