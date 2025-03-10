@@ -10,6 +10,8 @@ sudo certbot --nginx \
   -d real-estate-management.softcelia.com \
   -d db.softcelia.com \
   -d portainer.softcelia.com \
+  -d minio.softcelia.com \
+  -d minio-console.softcelia.com \
   --non-interactive \
   --agree-tos \
   --email m7firoz@gmail.com
