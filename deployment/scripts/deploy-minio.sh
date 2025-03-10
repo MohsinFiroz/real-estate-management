@@ -20,6 +20,7 @@ mkdir -p ~/minio/config
 docker run -d \
   --name minio-server \
   --restart always \
+  --network app-network \
   -p 9100:9000 \
   -p 9101:9001 \
   -v ~/minio/data:/data \
