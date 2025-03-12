@@ -70,18 +70,6 @@ jobs:
               "${{ secrets.DB_USER }}" \
               "${{ secrets.DB_PASSWORD }}" \
               "${{ secrets.DB_NAME }}"
-            
-      - name: Deploy MinIO
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.DOCKER_SERVER_IP }}
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          script_stop: true
-          script: |
-            bash ~/temp/deployment/scripts/deploy-minio.sh \
-              "${{ secrets.MINIO_ROOT_USER }}" \
-              "${{ secrets.MINIO_ROOT_PASSWORD }}" \
 
       - name: Build and Push Docker Image
         run: |
