@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Performance Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .header img {
+            max-height: 60px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .metrics {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        .metric-label {
+            font-weight: bold;
+        }
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            color: #777;
+            padding: 20px 0;
+            border-top: 1px solid #f0f0f0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img src="https://yourrealestate.com/logo.png" alt="Your Real Estate Management">
+    <h2>Property Performance Report</h2>
+</div>
+
+<div class="content">
+    <p>Dear Investor,</p>
+
+    <p>Please find attached the detailed performance report for <strong>{{.ReportData.PropertyName}}</strong> for the period <strong>{{.ReportData.ReportingPeriod}}</strong>.</p>
+
+    <p>Here's a summary of the key performance metrics:</p>
+
+    <div class="metrics">
+        <div class="metric-row">
+            <span class="metric-label">Occupancy Rate:</span>
+            <span>{{.ReportData.Occupancy}}%</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Gross Income:</span>
+            <span>{{formatCurrency .ReportData.GrossIncome}}</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Expenses:</span>
+            <span>{{formatCurrency .ReportData.Expenses}}</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Net Income:</span>
+            <span>{{formatCurrency .ReportData.NetIncome}}</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">ROI:</span>
+            <span>{{.ReportData.ROI}}%</span>
+        </div>
+    </div>
+
+    <p>For a complete breakdown, please refer to the attached PDF report, which includes:</p>
+    <ul>
+        <li>Detailed financial statements</li>
+        <li>Maintenance activities and expenses</li>
+        <li>Tenant movement summary</li>
+        <li>Market comparison analysis</li>
+        <li>Recommendations for the next quarter</li>
+    </ul>
+
+    <a href="https://yourrealestate.com/investor-portal" class="button">Visit Investor Portal</a>
+
+    <p>If you have any questions or would like to discuss the report in more detail, please don't hesitate to contact your property manager.</p>
+
+    <p>Thank you for your continued trust in our management services.</p>
+
+    <p>Best regards,<br>
+        Your Real Estate Management Team</p>
+</div>
+
+<div class="footer">
+    <p>This report is provided for informational purposes only.</p>
+    <p>© {{.CurrentYear}} Your Real Estate Management. All rights reserved.</p>
+</div>
+</body>
+</html>

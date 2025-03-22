@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Renewal Notification</title>
+</head>
+<body>
+<h2>Lease Renewal Notification</h2>
+<p>Dear {{.TenantName}},</p>
+<p>Your lease is set to expire on {{formatDate .LeaseEndDate}}.</p>
+<p>Please review the new lease terms and renew before the deadline.</p>
+<a href="{{.RenewalLink}}">Renew Lease</a>
+</body>
+</html>

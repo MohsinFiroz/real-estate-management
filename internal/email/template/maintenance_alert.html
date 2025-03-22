@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Alert</title>
+</head>
+<body>
+    <h2>Maintenance Alert</h2>
+    <p>Dear {{.TenantName}},</p>
+    <p>We want to inform you about a scheduled maintenance:</p>
+    <p>Maintenance Type: {{.MaintenanceType}}</p>
+    <p>Date: {{formatDate .Date}}</p>
+    <p>Time: {{.Time}}</p>
+    <p>Please contact us if you have any concerns.</p>
+</body>
+</html>

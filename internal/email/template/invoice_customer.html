@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Notification</title>
+</head>
+<body>
+<h2>Invoice Notification</h2>
+<p>Dear {{.CustomerName}},</p>
+<p>Your invoice for the month is ready. Please find the details below:</p>
+<p>Invoice Number: {{.InvoiceNumber}}</p>
+<p>Due Date: {{formatDate .DueDate}}</p>
+<p>Total Amount: {{formatCurrency .TotalAmount}}</p>
+<a href="{{.PaymentLink}}">Pay Invoice</a>
+<p>Thank you for your business.</p>
+</body>
+</html>

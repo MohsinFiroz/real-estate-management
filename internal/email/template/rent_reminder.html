@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Payment Reminder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .header img {
+            max-height: 60px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .footer {
+            font-size: 12px;
+            text-align: center;
+            color: #777;
+            padding: 20px 0;
+            border-top: 1px solid #f0f0f0;
+        }
+        .highlight {
+            background-color: #f7f7f7;
+            padding: 15px;
+            border-left: 4px solid #4a90e2;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img src="https://yourrealestate.com/logo.png" alt="Your Real Estate Management">
+    <h2>Rent Payment Reminder</h2>
+</div>
+
+<div class="content">
+    <p>Dear {{.TenantName}},</p>
+
+    <p>This is a friendly reminder that your rent payment is due on <strong>{{formatDate .DueDate}}</strong>.</p>
+
+    <div class="highlight">
+        <p><strong>Property:</strong> {{.PropertyDetails.Address}}</p>
+        <p><strong>Amount Due:</strong> {{formatCurrency .PropertyDetails.RentAmount}}</p>
+        <p><strong>Due Date:</strong> {{formatDate .DueDate}}</p>
+    </div>
+
+    <p>Please ensure your payment is made on time to avoid a late fee of {{formatCurrency .PropertyDetails.LateCharges}}.</p>
+
+    <a href="https://yourrealestate.com/pay" class="button">Make Payment Now</a>
+
+    <p>If you have already made your payment, please disregard this reminder.</p>
+
+    <p>Thank you for your prompt attention to this matter.</p>
+
+    <p>Best regards,<br>
+        Your Real Estate Management Team</p>
+</div>
+
+<div class="footer">
+    <p>This is an automated message. Please do not reply to this email.</p>
+    <p>© {{.CurrentYear}} Your Real Estate Management. All rights reserved.</p>
+    <p>123 Business Street, Suite 100, City, State 12345</p>
+</div>
+</body>
+</html>
