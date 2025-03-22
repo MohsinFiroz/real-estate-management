@@ -18,7 +18,7 @@ func MigrateDB(dbConfig config.DatabaseConfig) {
 
 	// Use a relative path for migrations
 	m, err := migrate.New(
-		"file:///app/deployment/migration", // Relative absolute path from WORKDIR
+		"file://deployment/migration", // Relative absolute path from WORKDIR
 		dsn,
 	)
 	if err != nil {
