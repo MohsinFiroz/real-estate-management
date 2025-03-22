@@ -9,7 +9,8 @@ type Service struct {
 	data *Data
 }
 
-//new wntity
+//new entity
+//new entity with files
 
 // NewService initializes the service layer with a data layer
 func NewService(data *Data) *Service {
