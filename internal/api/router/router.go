@@ -2,7 +2,9 @@ package router
 
 import (
 	"errors"
+	"real-estate-management/internal/entity/owner"
 	"real-estate-management/internal/entity/property"
+	"real-estate-management/internal/entity/tenant"
 	"real-estate-management/internal/entity/user"
 	"real-estate-management/internal/middleware"
 
@@ -37,16 +39,22 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	app.Use(middleware.CORS())
 
 	// Initialize repositories
-	propertyRepo := property.NewData(db)
 	userRepo := user.NewData(db)
+	ownerRepo := owner.NewData(db)
+	propertyRepo := property.NewData(db)
+	tenantRepo := tenant.NewData(db)
 
 	// Initialize services
-	propertyService := property.NewService(propertyRepo)
 	userService := user.NewService(userRepo)
+	ownerService := owner.NewService(ownerRepo)
+	propertyService := property.NewService(propertyRepo)
+	tenantService := tenant.NewService(tenantRepo)
 
 	// Initialize handlers
-	propertyHandler := property.NewHandler(propertyService)
 	userHandler := user.NewHandler(userService)
+	ownerHandler := owner.NewHandler(ownerService)
+	propertyHandler := property.NewHandler(propertyService)
+	tenantHandler := tenant.NewHandler(tenantService)
 
 	// API routes
 	api := app.Group("/v1")
@@ -62,11 +70,14 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	users.Put("/:id", userHandler.Update)
 	users.Delete("/:id", middleware.Auth(), userHandler.Delete)
 
+	// Owner routes
+	ownerHandler.RegisterRoutes(app)
+
 	// Property routes
-	properties := api.Group("/properties")
-	properties.Post("/", middleware.Auth(), propertyHandler.Create)
-	properties.Get("/", propertyHandler.GetAll)
-	properties.Get("/:id", propertyHandler.GetByID)
+	propertyHandler.RegisterRoutes(app)
+
+	// Tenant routes
+	tenantHandler.RegisterRoutes(app)
 
 	return app
 }
