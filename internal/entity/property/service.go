@@ -9,9 +9,6 @@ type Service struct {
 	data *Data
 }
 
-//new entity
-//new entity with files
-
 // NewService initializes the service layer with a data layer
 func NewService(data *Data) *Service {
 	return &Service{data: data}
@@ -38,7 +35,7 @@ func (s *Service) DeleteProperty(id string) error {
 }
 
 // GetAllProperties retrieves all properties with pagination, search, and sorting capabilities
-func (s *Service) GetAllProperties(page, pageSize int, searchQuery string, sortFields []rest.SortField) ([]Property, int64, error) {
+func (s *Service) GetAllProperties(page, pageSize int, searchQuery string, sortFields []rest.SortField, ownerID *string) ([]Property, int64, error) {
 	// Get the properties from the data layer
-	return s.data.GetAllProperties(page, pageSize, searchQuery, sortFields)
+	return s.data.GetAllProperties(page, pageSize, searchQuery, sortFields, ownerID)
 }

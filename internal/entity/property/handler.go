@@ -1,86 +1,79 @@
 package property
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"real-estate-management/pkg/rest"
-	"strconv"
 )
 
-// Handler struct
+// Handler struct to handle HTTP requests for property operations
 type Handler struct {
 	service *Service
 }
 
-// NewHandler initializes a new Handler with the service layer
+// NewHandler initializes the handler with a service layer
 func NewHandler(service *Service) *Handler {
 	return &Handler{service: service}
 }
 
-// Create handles creating a new property
+// Create handles the request to create a new property
 func (h *Handler) Create(c *fiber.Ctx) error {
-	// Parse the request body into the property struct
 	var property Property
 	if err := c.BodyParser(&property); err != nil {
-		return rest.BadRequest(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Call service layer to create the property
 	if err := h.service.CreateProperty(&property); err != nil {
-		return rest.Error(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return rest.Success(c, fiber.Map{
-		"message": "Property created successfully",
-	})
+	return c.Status(fiber.StatusCreated).JSON(property)
 }
 
-// GetByID handles retrieving a property by ID
+// GetByID handles the request to get a property by ID
 func (h *Handler) GetByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	// Call service layer to get property by ID
 	property, err := h.service.GetPropertyByID(id)
 	if err != nil {
-		return rest.Error(err)
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Property not found"})
 	}
 
-	return rest.Success(c, property)
+	return c.Status(fiber.StatusOK).JSON(property)
 }
 
-// Update handles updating a property
+// Update handles the request to update a property
 func (h *Handler) Update(c *fiber.Ctx) error {
+	id := c.Params("id")
+
 	var property Property
 	if err := c.BodyParser(&property); err != nil {
-		return rest.BadRequest(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Call service layer to update the property
+	property.ID = id
 	if err := h.service.UpdateProperty(&property); err != nil {
-		return rest.Error(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return rest.Success(c, fiber.Map{
-		"message": "Property updated successfully",
-	})
+	return c.Status(fiber.StatusOK).JSON(property)
 }
 
-// Delete handles deleting a property
+// Delete handles the request to delete a property
 func (h *Handler) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	// Call service layer to delete the property
 	if err := h.service.DeleteProperty(id); err != nil {
-		return rest.Error(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return rest.Success(c, fiber.Map{
-		"message": "Property deleted successfully",
-	})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Property deleted successfully"})
 }
 
-// List handles listing properties with pagination, sorting, and search term
+// List handles the request to get all properties with pagination, search, and sorting
 func (h *Handler) List(c *fiber.Ctx) error {
-	// Get query parameters
+	// Parse pagination parameters
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(c.Query("pageSize", "10"))
 	searchQuery := c.Query("searchQuery", "")
@@ -92,10 +85,15 @@ func (h *Handler) List(c *fiber.Ctx) error {
 		return rest.Error(err)
 	}
 
-	// Call service layer to get properties
-	properties, total, err := h.service.GetAllProperties(page, pageSize, searchQuery, sortFields)
+	// Parse owner filter if provided
+	var ownerID *string
+	if owner := c.Query("ownerID"); owner != "" {
+		ownerID = &owner
+	}
+
+	properties, total, err := h.service.GetAllProperties(page, pageSize, searchQuery, sortFields, ownerID)
 	if err != nil {
-		return rest.Error(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	// Calculate total pages
@@ -112,4 +110,15 @@ func (h *Handler) List(c *fiber.Ctx) error {
 
 	// Return success response
 	return rest.Success(c, response)
+}
+
+// RegisterRoutes registers all the routes for property operations
+func (h *Handler) RegisterRoutes(app *fiber.App) {
+	propertyGroup := app.Group("/api/properties")
+
+	propertyGroup.Post("", h.Create)
+	propertyGroup.Get("/:id", h.GetByID)
+	propertyGroup.Put("/:id", h.Update)
+	propertyGroup.Delete("/:id", h.Delete)
+	propertyGroup.Get("", h.List)
 }

@@ -40,8 +40,8 @@ func (d *Data) DeleteProperty(id string) error {
 	return d.db.Delete(&Property{}, "id = ?", id).Error
 }
 
-// GetAllProperties retrieves all properties with pagination, search, and sorting
-func (d *Data) GetAllProperties(page, pageSize int, searchQuery string, sortFields []rest.SortField) ([]Property, int64, error) {
+// GetAllProperties retrieves all properties with pagination, search, and sorting capabilities
+func (d *Data) GetAllProperties(page, pageSize int, searchQuery string, sortFields []rest.SortField, ownerID *string) ([]Property, int64, error) {
 	var properties []Property
 	var total int64
 
@@ -50,6 +50,10 @@ func (d *Data) GetAllProperties(page, pageSize int, searchQuery string, sortFiel
 	if searchQuery != "" {
 		query = query.Where("address ILIKE ? OR suburb ILIKE ? OR postcode ILIKE ?",
 			"%"+searchQuery+"%", "%"+searchQuery+"%", "%"+searchQuery+"%")
+	}
+
+	if ownerID != nil {
+		query = query.Where("owner_id = ?", *ownerID)
 	}
 
 	for _, sortField := range sortFields {

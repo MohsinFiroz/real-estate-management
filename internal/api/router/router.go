@@ -65,7 +65,7 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	// Property routes
 	properties := api.Group("/properties")
 	properties.Post("/", middleware.Auth(), propertyHandler.Create)
-	properties.Get("/", propertyHandler.GetAll)
+	properties.Get("/", propertyHandler.List)
 	properties.Get("/:id", propertyHandler.GetByID)
 
 	return app
