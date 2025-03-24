@@ -74,10 +74,10 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	ownerHandler.RegisterRoutes(api)
 
 	// Property routes
-	propertyHandler.RegisterRoutes(app)
+	propertyHandler.RegisterRoutes(api)
 
 	// Tenant routes
-	tenantHandler.RegisterRoutes(app)
+	tenantHandler.RegisterRoutes(api)
 
 	return app
 }
