@@ -10,7 +10,7 @@ import (
 // Property model representing a property record in the database
 type Property struct {
 	ID                   string     `json:"id" gorm:"column:id"`
-	OwnerID              string     `json:"ownerId" gorm:"column:owner_id" validate:"required"`
+	OwnerID              string     `json:"ownerID" gorm:"column:owner_id" validate:"required"`
 	Address              string     `json:"address" gorm:"column:address" validate:"required"`
 	Suburb               string     `json:"suburb" gorm:"column:suburb" validate:"required"`
 	Postcode             string     `json:"postcode" gorm:"column:postcode" validate:"required"`
