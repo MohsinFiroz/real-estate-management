@@ -115,8 +115,8 @@ func (h *Handler) List(c *fiber.Ctx) error {
 }
 
 // RegisterRoutes registers all the routes for property operations
-func (h *Handler) RegisterRoutes(app *fiber.App) {
-	propertyGroup := app.Group("/tenants")
+func (h *Handler) RegisterRoutes(router fiber.Router) {
+	propertyGroup := router.Group("/tenants")
 
 	propertyGroup.Post("", h.Create)
 	propertyGroup.Get("/:id", h.GetByID)

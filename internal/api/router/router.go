@@ -71,7 +71,7 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	users.Delete("/:id", middleware.Auth(), userHandler.Delete)
 
 	// Owner routes
-	ownerHandler.RegisterRoutes(app)
+	ownerHandler.RegisterRoutes(api)
 
 	// Property routes
 	propertyHandler.RegisterRoutes(app)
