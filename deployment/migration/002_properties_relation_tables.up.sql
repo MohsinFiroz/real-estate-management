@@ -1,6 +1,6 @@
 CREATE TABLE owners
 (
-    id                   SERIAL PRIMARY KEY,
+    id                   VARCHAR(26) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
     mobile               VARCHAR(50),
     email                VARCHAR(255),
@@ -22,7 +22,7 @@ CREATE INDEX idx_owners_mobile ON owners(mobile);
 
 CREATE TABLE tenants
 (
-    id                   SERIAL PRIMARY KEY,
+    id                   VARCHAR(26) PRIMARY KEY,
     name                 VARCHAR(255) NOT NULL,
     mobile               VARCHAR(50),
     email                VARCHAR(255),
@@ -39,7 +39,7 @@ CREATE INDEX idx_tenants_mobile ON tenants(mobile);
 
 CREATE TABLE properties
 (
-    id                      SERIAL PRIMARY KEY,
+    id                      VARCHAR(26) PRIMARY KEY,
     owner_id                INTEGER      NOT NULL REFERENCES owners (id),
     address                 VARCHAR(255) NOT NULL,
     suburb                  VARCHAR(100) NOT NULL,
