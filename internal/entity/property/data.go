@@ -32,7 +32,7 @@ func (d *Data) GetPropertyByID(id string) (*Property, error) {
 
 // UpdateProperty updates property information in the database
 func (d *Data) UpdateProperty(property *Property) error {
-	return d.db.Save(property).Error
+	return d.db.Model(property).Updates(property).Error
 }
 
 // DeleteProperty deletes a property by ID

@@ -32,7 +32,7 @@ func (d *Data) GetTenantByID(id string) (*Tenant, error) {
 
 // UpdateTenant updates tenant information in the database
 func (d *Data) UpdateTenant(tenant *Tenant) error {
-	return d.db.Save(tenant).Error
+	return d.db.Model(tenant).Updates(tenant).Error
 }
 
 // DeleteTenant deletes a tenant by ID

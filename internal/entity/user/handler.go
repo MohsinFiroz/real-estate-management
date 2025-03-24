@@ -49,10 +49,12 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 
 // Update handles updating a user
 func (h *Handler) Update(c *fiber.Ctx) error {
+	id := c.Params("id")
 	var user User
 	if err := c.BodyParser(&user); err != nil {
 		return rest.BadRequest(err)
 	}
+	user.ID = id
 
 	// Call service layer to update the user
 	if err := h.service.UpdateUser(&user); err != nil {

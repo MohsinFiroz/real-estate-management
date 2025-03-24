@@ -32,7 +32,7 @@ func (d *Data) GetUserByID(id string) (*User, error) {
 
 // UpdateUser updates user information in the database
 func (d *Data) UpdateUser(user *User) error {
-	return d.db.Save(user).Error
+	return d.db.Model(user).Updates(user).Error
 }
 
 // DeleteUser deletes a user by ID

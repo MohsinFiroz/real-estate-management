@@ -49,10 +49,12 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 
 // Update handles updating an owner
 func (h *Handler) Update(c *fiber.Ctx) error {
+	id := c.Params("id")
 	var owner Owner
 	if err := c.BodyParser(&owner); err != nil {
 		return rest.BadRequest(err)
 	}
+	owner.ID = id
 
 	// Call service layer to update the owner
 	if err := h.service.UpdateOwner(&owner); err != nil {

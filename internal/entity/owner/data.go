@@ -32,7 +32,7 @@ func (d *Data) GetOwnerByID(id string) (*Owner, error) {
 
 // UpdateOwner updates owner information in the database
 func (d *Data) UpdateOwner(owner *Owner) error {
-	return d.db.Save(owner).Error
+	return d.db.Model(owner).Updates(owner).Error
 }
 
 // DeleteOwner deletes an owner by ID
