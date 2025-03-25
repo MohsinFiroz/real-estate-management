@@ -28,7 +28,9 @@ func (h *Handler) Create(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(property)
+	return rest.Success(c, fiber.Map{
+		"message": "Property created successfully",
+	})
 }
 
 // GetByID handles the request to get a property by ID
@@ -40,7 +42,7 @@ func (h *Handler) GetByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Property not found"})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(property)
+	return rest.Success(c, property)
 }
 
 // Update handles the request to update a property
