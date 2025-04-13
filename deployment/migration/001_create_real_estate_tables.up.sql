@@ -4,17 +4,17 @@ CREATE TYPE user_role AS ENUM ('admin', 'user');
 -- Create users table
 CREATE TABLE users
 (
-    id            VARCHAR(26) PRIMARY KEY,
-    email         VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    first_name    VARCHAR(50)  NOT NULL,
-    last_name     VARCHAR(50),
-    phone         VARCHAR(20),
-    role          user_role    NOT NULL    DEFAULT 'user',
-    created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    last_login    TIMESTAMP WITH TIME ZONE,
-    is_active     BOOLEAN                  DEFAULT true
+    id         VARCHAR(26) PRIMARY KEY,
+    email      VARCHAR(255) NOT NULL UNIQUE,
+    password   VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50)  NOT NULL,
+    last_name  VARCHAR(50),
+    phone      VARCHAR(20),
+    role       user_role    NOT NULL    DEFAULT 'user',
+    last_login TIMESTAMP WITH TIME ZONE,
+    is_active  BOOLEAN                  DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create index on email for faster lookups

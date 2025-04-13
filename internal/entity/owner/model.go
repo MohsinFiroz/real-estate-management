@@ -7,21 +7,30 @@ import (
 	"time"
 )
 
+type CommunicationMedium string
+
+const (
+	SMS      CommunicationMedium = "SMS"
+	WeChat   CommunicationMedium = "WeChat"
+	WhatsApp CommunicationMedium = "WhatsApp"
+)
+
 // Owner model representing an owner record in the database
 type Owner struct {
-	ID                  string     `json:"id" gorm:"column:id"`
-	Name                string     `json:"name" gorm:"column:name" validate:"required"`
-	Mobile              string     `json:"mobile" gorm:"column:mobile"`
-	Email               string     `json:"email" gorm:"column:email"`
-	CommunicationMedium string     `json:"communicationMedium" gorm:"column:communication_medium"`
-	Insurance           string     `json:"insurance" gorm:"column:insurance"`
-	AccountNumber       string     `json:"accountNumber" gorm:"column:account_number"`
-	BSB                 string     `json:"bsb" gorm:"column:bsb"`
-	Identification      string     `json:"identification" gorm:"column:identification"`
-	Address             string     `json:"address" gorm:"column:address"`
-	Notes               string     `json:"notes" gorm:"column:notes"`
-	CreatedAt           *time.Time `json:"createdAt" gorm:"column:created_at"`
-	UpdatedAt           *time.Time `json:"updatedAt" gorm:"column:updated_at"`
+	ID                  string              `json:"id" gorm:"column:id"`
+	Name                string              `json:"name" gorm:"column:name" validate:"required"`
+	Mobile              string              `json:"mobile" gorm:"column:mobile"`
+	Email               string              `json:"email" gorm:"column:email"`
+	CommunicationMedium CommunicationMedium `json:"communicationMedium" gorm:"column:communication_medium" validate:"required,oneof=SMS WeChat WhatsApp"`
+	Insurance           string              `json:"insurance" gorm:"column:insurance"`
+	AccountNumber       string              `json:"accountNumber" gorm:"column:account_number"`
+	BSB                 string              `json:"bsb" gorm:"column:bsb"`
+	Identification      string              `json:"identification" gorm:"column:identification"`
+	Address             string              `json:"address" gorm:"column:address"`
+	Notes               string              `json:"notes" gorm:"column:notes"`
+	IsActive            bool                `json:"isActive" gorm:"column:is_active"`
+	CreatedAt           *time.Time          `json:"createdAt" gorm:"column:created_at"`
+	UpdatedAt           *time.Time          `json:"updatedAt" gorm:"column:updated_at"`
 }
 
 // TableName specifies the table name for the Owner model
@@ -63,6 +72,7 @@ var SortColumnMap = map[string]string{
 	"bsb":                 "bsb",
 	"identification":      "identification",
 	"address":             "address",
+	"isActive":            "is_active",
 	"createdAt":           "created_at",
 	"updatedAt":           "updated_at",
 }

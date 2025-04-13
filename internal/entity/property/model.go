@@ -15,7 +15,10 @@ type Property struct {
 	Suburb               string     `json:"suburb" gorm:"column:suburb" validate:"required"`
 	Postcode             string     `json:"postcode" gorm:"column:postcode" validate:"required"`
 	KeyNo                string     `json:"keyNo" gorm:"column:key_no"`
+	IsActive             bool       `json:"isActive" gorm:"column:is_active"`
 	ManagementFee        float64    `json:"managementFee" gorm:"column:management_fee"`
+	ManagementStartDate  string     `json:"managementStartDate" gorm:"column:management_start_date"`
+	ManagementEndDate    string     `json:"managementEndDate" gorm:"column:management_end_date"`
 	WaterBillAccount     string     `json:"waterBillAccount" gorm:"column:water_bill_account"`
 	LastWaterBillReading float64    `json:"lastWaterBillReading" gorm:"column:last_water_bill_reading"`
 	Notes                string     `json:"notes" gorm:"column:notes"`
@@ -54,12 +57,15 @@ func (p *Property) BeforeUpdate(tx *gorm.DB) (err error) {
 
 // SortColumnMap is sort column mappings from camelCase to snake_case
 var SortColumnMap = map[string]string{
-	"ownerId":              "owner_id",
+	"ownerID":              "owner_id",
 	"address":              "address",
 	"suburb":               "suburb",
 	"postcode":             "postcode",
 	"keyNo":                "key_no",
+	"isActive":             "is_active",
 	"managementFee":        "management_fee",
+	"managementStartDate":  "management_start_date",
+	"managementEndDate":    "management_end_date",
 	"waterBillAccount":     "water_bill_account",
 	"lastWaterBillReading": "last_water_bill_reading",
 	"createdAt":            "created_at",

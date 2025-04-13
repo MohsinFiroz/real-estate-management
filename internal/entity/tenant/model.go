@@ -7,16 +7,24 @@ import (
 	"time"
 )
 
+type CommunicationMedium string
+
+const (
+	SMS      CommunicationMedium = "SMS"
+	WeChat   CommunicationMedium = "WeChat"
+	WhatsApp CommunicationMedium = "WhatsApp"
+)
+
 // Tenant model representing a tenant record in the database
 type Tenant struct {
-	ID                  string     `json:"id" gorm:"column:id"`
-	Name                string     `json:"name" gorm:"column:name" validate:"required"`
-	Mobile              string     `json:"mobile" gorm:"column:mobile"`
-	Email               string     `json:"email" gorm:"column:email"`
-	CommunicationMedium string     `json:"communicationMedium" gorm:"column:communication_medium"`
-	Notes               string     `json:"notes" gorm:"column:notes"`
-	CreatedAt           *time.Time `json:"createdAt" gorm:"column:created_at"`
-	UpdatedAt           *time.Time `json:"updatedAt" gorm:"column:updated_at"`
+	ID                  string              `json:"id" gorm:"column:id"`
+	Name                string              `json:"name" gorm:"column:name" validate:"required"`
+	Mobile              string              `json:"mobile" gorm:"column:mobile"`
+	Email               string              `json:"email" gorm:"column:email"`
+	CommunicationMedium CommunicationMedium `json:"communicationMedium" gorm:"column:communication_medium" validate:"required,oneof=SMS WeChat WhatsApp"`
+	IsActive            bool                `json:"isActive" gorm:"column:is_active"`
+	CreatedAt           *time.Time          `json:"createdAt" gorm:"column:created_at"`
+	UpdatedAt           *time.Time          `json:"updatedAt" gorm:"column:updated_at"`
 }
 
 // TableName specifies the table name for the Tenant model
@@ -53,6 +61,7 @@ var SortColumnMap = map[string]string{
 	"mobile":              "mobile",
 	"email":               "email",
 	"communicationMedium": "communication_medium",
+	"isActive":            "is_active",
 	"createdAt":           "created_at",
 	"updatedAt":           "updated_at",
 }

@@ -1,3 +1,9 @@
+DROP INDEX IF EXISTS idx_tenancies_end_date;
+DROP INDEX IF EXISTS idx_tenancies_start_date;
+DROP INDEX IF EXISTS idx_tenancies_primary_tenant_id;
+DROP INDEX IF EXISTS idx_tenancies_property_id;
+DROP TABLE IF EXISTS tenancies;
+
 DROP INDEX IF EXISTS idx_properties_address;
 DROP INDEX IF EXISTS idx_properties_postcode;
 DROP INDEX IF EXISTS idx_properties_suburb;

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"real-estate-management/internal/entity/owner"
 	"real-estate-management/internal/entity/property"
+	"real-estate-management/internal/entity/tenancy"
 	"real-estate-management/internal/entity/tenant"
 	"real-estate-management/internal/entity/user"
 	"real-estate-management/internal/middleware"
@@ -43,18 +44,21 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 	ownerRepo := owner.NewData(db)
 	propertyRepo := property.NewData(db)
 	tenantRepo := tenant.NewData(db)
+	tenancyRepo := tenancy.NewData(db)
 
 	// Initialize services
 	userService := user.NewService(userRepo)
 	ownerService := owner.NewService(ownerRepo)
 	propertyService := property.NewService(propertyRepo)
 	tenantService := tenant.NewService(tenantRepo)
+	tenancyService := tenancy.NewService(tenancyRepo)
 
 	// Initialize handlers
 	userHandler := user.NewHandler(userService)
 	ownerHandler := owner.NewHandler(ownerService)
 	propertyHandler := property.NewHandler(propertyService)
 	tenantHandler := tenant.NewHandler(tenantService)
+	tenancyHandler := tenancy.NewHandler(tenancyService)
 
 	// API routes
 	api := app.Group("/v1")
@@ -78,6 +82,9 @@ func SetupRoutes(db *gorm.DB) *fiber.App {
 
 	// Tenant routes
 	tenantHandler.RegisterRoutes(api)
+
+	// Tenancy routes
+	tenancyHandler.RegisterRoutes(api)
 
 	return app
 }
