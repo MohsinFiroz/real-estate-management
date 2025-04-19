@@ -1,10 +1,11 @@
 package user
 
 import (
-	"gorm.io/gorm"
 	"real-estate-management/pkg/id"
 	"real-estate-management/pkg/validator"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // Role defines the user role type
@@ -25,7 +26,7 @@ type User struct {
 	LastName  string     `json:"lastName" gorm:"column:last_name"`
 	Phone     string     `json:"phone" gorm:"column:phone" `
 	Role      Role       `json:"role" gorm:"column:role" validate:"required,oneof=admin user"`
-	IsActive  bool       `json:"isActive" gorm:"column:is_active"`
+	IsActive  bool       `json:"isActive" gorm:"column:is_active;default:true"`
 	LastLogin *time.Time `json:"lastLogin" gorm:"column:last_login"`
 	CreatedAt *time.Time `json:"createdAt" gorm:"column:created_at"`
 	UpdatedAt *time.Time `json:"updatedAt" gorm:"column:updated_at"`

@@ -1,10 +1,11 @@
 package owner
 
 import (
-	"gorm.io/gorm"
 	"real-estate-management/pkg/id"
 	"real-estate-management/pkg/validator"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type CommunicationMedium string
@@ -21,14 +22,14 @@ type Owner struct {
 	Name                string              `json:"name" gorm:"column:name" validate:"required"`
 	Mobile              string              `json:"mobile" gorm:"column:mobile"`
 	Email               string              `json:"email" gorm:"column:email"`
-	CommunicationMedium CommunicationMedium `json:"communicationMedium" gorm:"column:communication_medium" validate:"required,oneof=SMS WeChat WhatsApp"`
+	CommunicationMedium CommunicationMedium `json:"communicationMedium" gorm:"column:communication_medium" validate:"omitempty,oneof=SMS WeChat WhatsApp"`
 	Insurance           string              `json:"insurance" gorm:"column:insurance"`
 	AccountNumber       string              `json:"accountNumber" gorm:"column:account_number"`
 	BSB                 string              `json:"bsb" gorm:"column:bsb"`
 	Identification      string              `json:"identification" gorm:"column:identification"`
 	Address             string              `json:"address" gorm:"column:address"`
 	Notes               string              `json:"notes" gorm:"column:notes"`
-	IsActive            bool                `json:"isActive" gorm:"column:is_active"`
+	IsActive            bool                `json:"isActive" gorm:"column:is_active;default:true"`
 	CreatedAt           *time.Time          `json:"createdAt" gorm:"column:created_at"`
 	UpdatedAt           *time.Time          `json:"updatedAt" gorm:"column:updated_at"`
 }

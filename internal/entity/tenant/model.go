@@ -1,10 +1,11 @@
 package tenant
 
 import (
-	"gorm.io/gorm"
 	"real-estate-management/pkg/id"
 	"real-estate-management/pkg/validator"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type CommunicationMedium string
@@ -21,8 +22,8 @@ type Tenant struct {
 	Name                string              `json:"name" gorm:"column:name" validate:"required"`
 	Mobile              string              `json:"mobile" gorm:"column:mobile"`
 	Email               string              `json:"email" gorm:"column:email"`
-	CommunicationMedium CommunicationMedium `json:"communicationMedium" gorm:"column:communication_medium" validate:"required,oneof=SMS WeChat WhatsApp"`
-	IsActive            bool                `json:"isActive" gorm:"column:is_active"`
+	CommunicationMedium CommunicationMedium `json:"communicationMedium" gorm:"column:communication_medium" validate:"omitempty,oneof=SMS WeChat WhatsApp"`
+	IsActive            bool                `json:"isActive" gorm:"column:is_active;default:true"`
 	CreatedAt           *time.Time          `json:"createdAt" gorm:"column:created_at"`
 	UpdatedAt           *time.Time          `json:"updatedAt" gorm:"column:updated_at"`
 }
