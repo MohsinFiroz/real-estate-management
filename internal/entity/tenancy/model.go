@@ -1,10 +1,11 @@
 package tenancy
 
 import (
-	"gorm.io/gorm"
 	"real-estate-management/pkg/id"
 	"real-estate-management/pkg/validator"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type RentFrequency string
@@ -15,9 +16,19 @@ const (
 	Monthly     RentFrequency = "Monthly"
 )
 
+type Status string
+
+const (
+	Active     Status = "Active"
+	Inactive   Status = "Inactive"
+	BondRefund Status = "BondRefund"
+	SACAT      Status = "SACAT"
+)
+
 // Tenancy model representing a tenancy record in the database
 type Tenancy struct {
 	ID              string        `json:"id" gorm:"column:id"`
+	Status          Status        `json:"status" gorm:"column:status" validate:"oneof=Active Inactive BondRefund SACAT"`
 	PropertyID      string        `json:"propertyID" gorm:"column:property_id" validate:"required"`
 	PrimaryTenantID string        `json:"primaryTenantID" gorm:"column:primary_tenant_id"`
 	Rent            int           `json:"rent" gorm:"column:rent"`
