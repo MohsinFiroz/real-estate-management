@@ -93,18 +93,8 @@ var SortColumnMap = map[string]string{
 }
 
 type CreateTenancyRequest struct {
-	Tenancy   *Tenancy
+	Tenancy   Tenancy
 	TenantIDs []string // multiple tenants attached to tenancy
-}
-
-type TenancyDetail struct {
-	Tenancy *Tenancy         `json:"tenancy"`
-	Tenants []TenantBasicDTO `json:"tenants"`
-}
-
-type TenantBasicDTO struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }
 
 type TenancyTenant struct {

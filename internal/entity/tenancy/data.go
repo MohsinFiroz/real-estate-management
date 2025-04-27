@@ -19,7 +19,7 @@ func NewData(db *gorm.DB) *Data {
 }
 
 // CreateTenancy creates a new tenancy in the database
-func (d *Data) CreateTenancy(req *CreateTenancyRequest) error {
+func (d *Data) CreateTenancy(req CreateTenancyRequest) error {
 	return d.db.Transaction(func(tx *gorm.DB) error {
 		// Create tenancy first
 		if err := tx.Create(req.Tenancy).Error; err != nil {

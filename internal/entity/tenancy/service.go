@@ -15,7 +15,7 @@ func NewService(data *Data) *Service {
 }
 
 // CreateTenancy creates a new tenancy after validating input
-func (s *Service) CreateTenancy(tenancy *Tenancy) error {
+func (s *Service) CreateTenancy(tenancy CreateTenancyRequest) error {
 	return s.data.CreateTenancy(tenancy)
 }
 

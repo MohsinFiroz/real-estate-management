@@ -1,9 +1,10 @@
 package tenancy
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"real-estate-management/pkg/rest"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // Handler struct
@@ -19,13 +20,13 @@ func NewHandler(service *Service) *Handler {
 // Create handles creating a new tenancy
 func (h *Handler) Create(c *fiber.Ctx) error {
 	// Parse the request body into the tenancy struct
-	var tenancy Tenancy
+	var tenancy CreateTenancyRequest
 	if err := c.BodyParser(&tenancy); err != nil {
 		return rest.BadRequest(err)
 	}
 
 	// Call service layer to create the tenancy
-	if err := h.service.CreateTenancy(&tenancy); err != nil {
+	if err := h.service.CreateTenancy(tenancy); err != nil {
 		return rest.Error(err)
 	}
 
