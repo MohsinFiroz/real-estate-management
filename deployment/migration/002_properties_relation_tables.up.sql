@@ -66,7 +66,7 @@ CREATE TABLE tenancies
     id                VARCHAR(26) PRIMARY KEY,
     property_id       VARCHAR(26) NOT NULL REFERENCES properties (id),
     primary_tenant_id VARCHAR(26) NOT NULL REFERENCES tenants (id),
-    status            VARCHAR(20) CHECK DEFAULT 'Active' (status IN ('Active', 'Inactive', 'BondRefund', 'SACAT')),
+    status VARCHAR(20) DEFAULT 'Active' CHECK (status IN ('Active', 'Inactive', 'BondRefund', 'SACAT'))
     rent              INTEGER     NOT NULL,
     bond_amount       INTEGER     NOT NULL,
     bond_id           VARCHAR(100),
@@ -83,3 +83,10 @@ CREATE INDEX idx_tenancies_property_id ON tenancies (property_id);
 CREATE INDEX idx_tenancies_primary_tenant_id ON tenancies (primary_tenant_id);
 CREATE INDEX idx_tenancies_start_date ON tenancies (start_date);
 CREATE INDEX idx_tenancies_end_date ON tenancies (end_date);
+
+CREATE TABLE tenancy_tenants
+(
+    tenancy_id VARCHAR(26) NOT NULL REFERENCES tenancies (id) ON DELETE CASCADE,
+    tenant_id  VARCHAR(26) NOT NULL REFERENCES tenants (id) ON DELETE CASCADE,
+    PRIMARY KEY (tenancy_id, tenant_id)
+);

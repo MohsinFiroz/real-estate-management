@@ -2,8 +2,10 @@ package tenancy
 
 import (
 	"fmt"
-	"gorm.io/gorm"
+	"real-estate-management/internal/entity/tenant"
 	"real-estate-management/pkg/rest"
+
+	"gorm.io/gorm"
 )
 
 // Data struct to hold the GORM DB instance for performing database operations
@@ -17,8 +19,29 @@ func NewData(db *gorm.DB) *Data {
 }
 
 // CreateTenancy creates a new tenancy in the database
-func (d *Data) CreateTenancy(tenancy *Tenancy) error {
-	return d.db.Create(tenancy).Error
+func (d *Data) CreateTenancy(req *CreateTenancyRequest) error {
+	return d.db.Transaction(func(tx *gorm.DB) error {
+		// Create tenancy first
+		if err := tx.Create(req.Tenancy).Error; err != nil {
+			return err
+		}
+
+		// Insert into tenancy_tenants table
+		var tenancyTenants []TenancyTenant
+		for _, tenantID := range req.TenantIDs {
+			tenancyTenants = append(tenancyTenants, TenancyTenant{
+				TenancyID: req.Tenancy.ID,
+				TenantID:  tenantID,
+			})
+		}
+		if len(tenancyTenants) > 0 {
+			if err := tx.Create(&tenancyTenants).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 // GetTenancyByID retrieves a tenancy by ID
@@ -27,6 +50,25 @@ func (d *Data) GetTenancyByID(id string) (*Tenancy, error) {
 	if err := d.db.First(&tenancy, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
+
+	// Fetch primary tenant
+	var primaryTenant tenant.Tenant
+	if err := d.db.First(&primaryTenant, "id = ?", tenancy.PrimaryTenantID).Error; err == nil {
+		tenancy.PrimaryTenant = &primaryTenant
+	}
+
+	// Fetch all tenants linked to this tenancy
+	var tenants []tenant.Tenant
+	if err := d.db.
+		Table("tenants").
+		Select("tenants.*").
+		Joins("INNER JOIN tenancy_tenants ON tenants.id = tenancy_tenants.tenant_id").
+		Where("tenancy_tenants.tenancy_id = ?", tenancy.ID).
+		Find(&tenants).Error; err != nil {
+		return nil, err
+	}
+	tenancy.Tenants = tenants
+
 	return &tenancy, nil
 }
 

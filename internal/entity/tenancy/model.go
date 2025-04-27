@@ -1,6 +1,7 @@
 package tenancy
 
 import (
+	"real-estate-management/internal/entity/tenant"
 	"real-estate-management/pkg/id"
 	"real-estate-management/pkg/validator"
 	"time"
@@ -27,20 +28,23 @@ const (
 
 // Tenancy model representing a tenancy record in the database
 type Tenancy struct {
-	ID              string        `json:"id" gorm:"column:id"`
-	Status          Status        `json:"status" gorm:"column:status" validate:"oneof=Active Inactive BondRefund SACAT"`
-	PropertyID      string        `json:"propertyID" gorm:"column:property_id" validate:"required"`
-	PrimaryTenantID string        `json:"primaryTenantID" gorm:"column:primary_tenant_id"`
-	Rent            int           `json:"rent" gorm:"column:rent"`
-	BondAmount      int           `json:"bondAmount" gorm:"column:bond_amount"`
-	BondID          string        `json:"bondID" gorm:"column:bond_id"`
-	RentFrequency   RentFrequency `json:"rentFrequency" gorm:"column:rent_frequency" validate:"required,oneof=Weekly Fortnightly Monthly"`
-	StartDate       string        `json:"startDate" gorm:"column:start_date"` // 30/02/2025 format
-	EndDate         string        `json:"endDate" gorm:"column:end_date"`     // 30/02/2025 format
-	Notes           string        `json:"notes" gorm:"column:notes"`
-	Notices         string        `json:"notices" gorm:"column:notices"`
-	CreatedAt       *time.Time    `json:"createdAt" gorm:"column:created_at"`
-	UpdatedAt       *time.Time    `json:"updatedAt" gorm:"column:updated_at"`
+	ID              string     `json:"id" gorm:"column:id"`
+	PropertyID      string     `json:"propertyId" gorm:"column:property_id"`
+	PrimaryTenantID string     `json:"primaryTenantId" gorm:"column:primary_tenant_id"`
+	Status          string     `json:"status" gorm:"column:status"`
+	Rent            int        `json:"rent" gorm:"column:rent"`
+	BondAmount      int        `json:"bondAmount" gorm:"column:bond_amount"`
+	BondID          string     `json:"bondId" gorm:"column:bond_id"`
+	RentFrequency   string     `json:"rentFrequency" gorm:"column:rent_frequency"`
+	StartDate       time.Time  `json:"startDate" gorm:"column:start_date"`
+	EndDate         time.Time  `json:"endDate" gorm:"column:end_date"`
+	Notes           *string    `json:"notes" gorm:"column:notes"`
+	Notices         *string    `json:"notices" gorm:"column:notices"`
+	CreatedAt       *time.Time `json:"createdAt" gorm:"column:created_at"`
+	UpdatedAt       *time.Time `json:"updatedAt" gorm:"column:updated_at"`
+
+	PrimaryTenant *tenant.Tenant  `json:"primaryTenant,omitempty" gorm:"-"`
+	Tenants       []tenant.Tenant `json:"tenants,omitempty" gorm:"-"`
 }
 
 // TableName specifies the table name for the Tenancy model
@@ -86,4 +90,37 @@ var SortColumnMap = map[string]string{
 	"notice":          "notices",
 	"createdAt":       "created_at",
 	"updatedAt":       "updated_at",
+}
+
+type CreateTenancyRequest struct {
+	Tenancy   *Tenancy
+	TenantIDs []string // multiple tenants attached to tenancy
+}
+
+type TenancyDetail struct {
+	Tenancy *Tenancy         `json:"tenancy"`
+	Tenants []TenantBasicDTO `json:"tenants"`
+}
+
+type TenantBasicDTO struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type TenancyTenant struct {
+	TenancyID string `json:"tenancyID" gorm:"column:tenancy_id"`
+	TenantID  string `json:"tenantID" gorm:"column:tenant_id"`
+
+	CreatedAt *time.Time `json:"createdAt" gorm:"column:created_at"`
+}
+
+func (*TenancyTenant) TableName() string {
+	return "tenancy_tenants"
+}
+
+// BeforeCreate hook to set CreatedAt time
+func (tt *TenancyTenant) BeforeCreate(tx *gorm.DB) (err error) {
+	now := time.Now()
+	tt.CreatedAt = &now
+	return nil
 }

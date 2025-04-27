@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS tenancy_tenants;
+
 DROP INDEX IF EXISTS idx_tenancies_end_date;
 DROP INDEX IF EXISTS idx_tenancies_start_date;
 DROP INDEX IF EXISTS idx_tenancies_primary_tenant_id;
