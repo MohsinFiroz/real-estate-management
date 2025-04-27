@@ -66,7 +66,7 @@ CREATE TABLE tenancies
     id                VARCHAR(26) PRIMARY KEY,
     property_id       VARCHAR(26) NOT NULL REFERENCES properties (id),
     primary_tenant_id VARCHAR(26) NOT NULL REFERENCES tenants (id),
-    status VARCHAR(20) DEFAULT 'Active' CHECK (status IN ('Active', 'Inactive', 'BondRefund', 'SACAT'))
+    status VARCHAR(20) DEFAULT 'Active' CHECK (status IN ('Active', 'Inactive', 'BondRefund', 'SACAT')),
     rent              INTEGER     NOT NULL,
     bond_amount       INTEGER     NOT NULL,
     bond_id           VARCHAR(100),
